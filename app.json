@@ -3,6 +3,9 @@
     "name": "contralyze",
     "slug": "contralyze",
     "version": "1.0.0",
+    "extra": {
+      "API_URL": "http://localhost:3000/api/v1"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
