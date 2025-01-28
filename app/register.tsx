@@ -1,6 +1,7 @@
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native"
+import { showMessage } from 'react-native-flash-message';
 import {
   View,
   Text,
@@ -14,26 +15,133 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
+import { useAuth } from "./AuthProvider"
+import { onRegister } from "./Login/register"
 
 const RegisterScreen = () => {
 
   const navigation = useNavigation();
-
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
+  const { login } = useAuth();
+  const [first_name, setFirstName] = useState("")
+  const [last_name, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState(0)
+  const [passwordsMatch, setPasswordsMatch] = useState(false)
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    length: false,
+    number: false,
+    letter: false,
+    special: false,
+  })
+
+  const [emailCriteria, setEmailCriteria] = useState({
+    valid: false,
+  })
+
+  useEffect(() => {
+    const newCriteria = {
+      length: password.length >= 8,
+      number: /\d/.test(password),
+      letter: /[a-zA-Z]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>_-]/.test(password),
+    }
+    const newEmailCriteria = {
+      valid: /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|yahoo)\.com$/.test(email),
+    };
+    
+    setEmailCriteria(newEmailCriteria)
+
+    setPasswordCriteria(newCriteria)
+
+    const strength = Object.values(newCriteria).filter(Boolean).length
+    setPasswordStrength(strength)
+
+    setPasswordsMatch(password === confirmPassword && password !== "")
+  }, [password, confirmPassword])
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden")
+      showMessage({
+        message: "The passwords do not match",
+        type: "danger",
+      });
       return
     }
-    // onRegister(name, email, password)
+    if (passwordStrength < 4) {
+      showMessage({
+        message: "Error",
+        description: "Please make sure the password meets all criteria",
+        type: "danger",
+        style: {
+          height: 10, // Reduce la altura
+          borderRadius: 8,
+          marginHorizontal: 10, // Ajusta el margen horizontal
+        },
+      });
+      return
+    }
+    if (!emailCriteria.valid) {
+      showMessage({
+        message: "Error",
+        description: "Please make sure the email is valid",
+        type: "danger",
+        backgroundColor: '#ff4d4d', // background color
+        color: '#fff', // text color
+        // icon: { icon: 'danger', position: 'left' }, // icon
+      });
+      return;
+    }
+    onRegister(email, password, first_name, last_name, navigation, login)
   }
+
+  const renderPasswordStrengthIndicator = () => (
+    <View style={styles.strengthIndicator}>
+      {[...Array(4)].map((_, index) => (
+        <View
+          key={index}
+          style={[
+            styles.strengthBar,
+            index < passwordStrength ? styles.activeStrengthBar : null,
+            index < passwordStrength
+              ? passwordStrength === 1
+                ? styles.weakBar
+                : passwordStrength === 2
+                  ? styles.fairBar
+                  : passwordStrength === 3
+                    ? styles.goodBar
+                    : styles.strongBar
+              : null,
+          ]}
+        />
+      ))}
+    </View>
+  )
+
+  const handleNameChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (text: string) => {
+    const filteredText = text.replace(/[^a-zA-Z]/g, '');
+    setter(filteredText);
+  };
+
+  const renderPasswordCriteria = () => {
+    const criteriaText = []
+    if (passwordCriteria.length) criteriaText.push("8+ characters")
+    if (passwordCriteria.number) criteriaText.push("numbers")
+    if (passwordCriteria.letter) criteriaText.push("letters")
+    if (passwordCriteria.special) criteriaText.push("special characters")
+
+    return (
+      <Text style={styles.criteriaText}>
+        {criteriaText.length > 0
+          ? `Password contains: ${criteriaText.join(", ")}`
+          : "Password must contain at least 8 characters, numbers, letters, and special characters"}
+      </Text>
+    )
+  }
+
 
   const onBackToLogin = () => {
     navigation.navigate("index")
@@ -61,8 +169,8 @@ const RegisterScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="First name"
-              value={firstName}
-              onChangeText={setFirstName}
+              value={first_name}
+              onChangeText={handleNameChange(setFirstName)}
               autoCapitalize="words"
             />
           </View>
@@ -71,8 +179,8 @@ const RegisterScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="Last name"
-              value={lastName}
-              onChangeText={setLastName}
+              value={last_name}
+              onChangeText={handleNameChange(setLastName)}
               autoCapitalize="words"
             />
           </View>
@@ -88,7 +196,6 @@ const RegisterScreen = () => {
               autoCapitalize="none"
             />
           </View>
-
           <View style={styles.inputContainer}>
             <Feather name="lock" size={14} color="#4A90E2" style={styles.inputIcon} />
             <TextInput
@@ -102,12 +209,15 @@ const RegisterScreen = () => {
               <Feather name={showPassword ? "eye" : "eye-off"} size={14} color="#4A90E2" />
             </TouchableOpacity>
           </View>
+          
+          {renderPasswordStrengthIndicator()}
+          {renderPasswordCriteria()}
 
           <View style={styles.inputContainer}>
             <Feather name="lock" size={14} color="#4A90E2" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Repeat password"
+              placeholder="Confirm password"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry={!showConfirmPassword}
@@ -116,8 +226,17 @@ const RegisterScreen = () => {
               <Feather name={showConfirmPassword ? "eye" : "eye-off"} size={14} color="#4A90E2" />
             </TouchableOpacity>
           </View>
+          {confirmPassword !== "" && (
+            <Text style={[styles.matchText, passwordsMatch ? styles.matchSuccess : styles.matchError]}>
+              {passwordsMatch ? "✓ The passwords do match" : "✗ The passwords don't match"}
+            </Text>
+          )}
 
-          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <TouchableOpacity
+            style={[styles.registerButton, (passwordStrength < 4 || !passwordsMatch) && styles.disabledButton]}
+            onPress={handleRegister}
+            disabled={passwordStrength < 4 || !passwordsMatch}
+          >
             <Text style={styles.registerButtonText}>Register</Text>
           </TouchableOpacity>
 
@@ -195,13 +314,60 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 10,
   },
+  strengthIndicator: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  strengthBar: {
+    flex: 1,
+    height: 2,
+    backgroundColor: "#E0E0E0",
+    marginHorizontal: 2,
+    borderRadius: 2,
+  },
+  activeStrengthBar: {
+    backgroundColor: "#4CAF50",
+  },
+  weakBar: {
+    backgroundColor: "#FF5252",
+  },
+  fairBar: {
+    backgroundColor: "#FFC107",
+  },
+  goodBar: {
+    backgroundColor: "#4CAF50",
+  },
+  strongBar: {
+    backgroundColor: "#2196F3",
+  },
+  matchText: {
+    fontSize: 11,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  criteriaText: {
+    fontSize: 10,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  matchSuccess: {
+    color: "#4CAF50",
+  },
+  matchError: {
+    color: "#FF5252",
+  },
   registerButton: {
     backgroundColor: "#4A90E2",
     borderRadius: 8,
-    height: 50,
+    height: 34,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
+  },
+  disabledButton: {
+    backgroundColor: "#B0BEC5",
   },
   registerButtonText: {
     color: "white",

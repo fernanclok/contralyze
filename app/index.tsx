@@ -1,5 +1,5 @@
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import {
   View,
@@ -11,11 +11,14 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
-  ImageBackground
+  ImageBackground,
+  Image
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import { onLogin } from "./Login/login_logic"
+import { showMessage } from "react-native-flash-message"
+import { useAuth } from "./AuthProvider"
 
 
 const LoginScreen = ({  }) => {
@@ -24,22 +27,36 @@ const LoginScreen = ({  }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
 
-  const navigation = useNavigation();
-  const goToRegister = () => {  navigation.navigate('register') }
-
+  
+    const navigation = useNavigation();
+    const { login } = useAuth();
+    const goToRegister = () => {  navigation.navigate('register') }
+  
+   
   const handleLogin = () => {
     if(!email || !password) {
       setError("Please fill in all fields")
       console.log("Please fill in all fields")
+      showMessage({
+        message: 'Please fill in all fields',
+        type: 'warning'
+      })
+    
       return
     }
+  
     setLoading(true)
     setError(null)
     try{
-       onLogin(email, password, navigation)
+       onLogin(email, password, navigation, login)
     }catch(err){
       setError("Login failed. Please check your credentials and try again.")
+      showMessage({
+        message: 'Login failed. Please check your credentials and try again.',
+        type: 'danger'
+      })
     }finally{
       setLoading(false)
     }
@@ -51,14 +68,13 @@ const LoginScreen = ({  }) => {
         <ImageBackground
         source={require('../assets/images/back_login.jpeg')} 
         style={styles.backgroundImage}
-        blurRadius={10} // Difumina la imagen
+        blurRadius={6} // Difumina la imagen
         resizeMode="cover" // Ajusta la imagen según la pantalla
       >
         <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.card}>
           <View style={styles.logoContainer}>
-            <Feather name="lock" size={38} color="#4A90E2" />
-            <Text style={styles.logoText}>Login</Text>
+            <Image source={require('../assets/images/Contralyze.png')} style={{ width: 100, height: 100 }} />
           </View>
 
           <View style={styles.inputContainer}>
@@ -147,7 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#4A90E2",
-    marginTop: 10,
   },
   inputContainer: {
     flexDirection: "row",

@@ -5,8 +5,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
+import { AuthProvider } from './AuthProvider';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import FlashMessage from 'react-native-flash-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,12 +29,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack> 
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+        <AuthProvider>
+          <Stack> 
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
+            <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <FlashMessage position="top" floating={true} />
+        </AuthProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );

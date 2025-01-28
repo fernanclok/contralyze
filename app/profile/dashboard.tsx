@@ -1,22 +1,31 @@
 import type React from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-
-type DashboardScreenProps = {
-  onLogout: () => void
-}
+import { ProtectedRoute } from "../AuthProvider"
+import { onLogout } from "../Login/login_logic"
+import { useNavigation } from "@react-navigation/native"
+import { useAuth } from "../AuthProvider"
 
 const DashboardScreen = ({ }) => {
+
+  const navigation = useNavigation();
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    onLogout(navigation, logout)
+  }
+
   return (
+    <ProtectedRoute>
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Bienvenido al Dashboard</Text>
         <Text style={styles.subtitle}>Has iniciado sesión correctamente</Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={() => console.log("Logout")}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </ProtectedRoute>
   )
 }
 
