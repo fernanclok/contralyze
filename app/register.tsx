@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import { useAuth } from "./AuthProvider"
-import { onRegister } from "./Login/register"
+import { onRegister } from "./LoginTs/register"
 
 const RegisterScreen = () => {
 

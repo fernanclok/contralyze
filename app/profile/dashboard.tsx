@@ -2,7 +2,7 @@ import type React from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { ProtectedRoute } from "../AuthProvider"
-import { onLogout } from "../Login/login_logic"
+import { onLogout } from "../LoginTs/login_logic"
 import { useNavigation } from "@react-navigation/native"
 import { useAuth } from "../AuthProvider"
 
