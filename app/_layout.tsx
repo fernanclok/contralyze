@@ -9,6 +9,7 @@ import { AuthProvider } from './AuthProvider';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import FlashMessage from 'react-native-flash-message';
 
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

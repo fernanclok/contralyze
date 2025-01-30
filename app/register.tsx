@@ -11,7 +11,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Image
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
@@ -160,8 +161,7 @@ const RegisterScreen = () => {
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.card}>
           <View style={styles.logoContainer}>
-            <Feather name="user-plus" size={38} color="#4A90E2" />
-            <Text style={styles.logoText}>Create account</Text>
+            <Image source={require('../assets/images/Contralyze.png')} style={{ width: 100, height: 100 }} />
           </View>
 
           <View style={styles.inputContainer}>

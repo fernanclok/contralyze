@@ -79,7 +79,7 @@ export async function onLogout(navigation: any, logout: () => void) {
             message: 'You have successfully logged out',
             type: 'success'
         })
-        navigation.navigate('/index');
+        navigation.navigate('index');
     } catch (error) {
         console.error(error);
         showMessage({

@@ -5,6 +5,8 @@ import { ProtectedRoute } from "../AuthProvider"
 import { onLogout } from "../LoginTs/login_logic"
 import { useNavigation } from "@react-navigation/native"
 import { useAuth } from "../AuthProvider"
+import tw from "twrnc";
+import MainLayout from "../components/MainLayout"
 
 const DashboardScreen = ({ }) => {
 
@@ -16,15 +18,17 @@ const DashboardScreen = ({ }) => {
 
   return (
     <ProtectedRoute>
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Bienvenido al Dashboard</Text>
-        <Text style={styles.subtitle}>Has iniciado sesión correctamente</Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        <MainLayout>
+            <SafeAreaView style={styles.container}>
+              <View style={styles.content}>
+                <Text style={styles.title}>Bienvenido al Dashboard</Text>
+                <Text style={styles.subtitle}>Has iniciado sesión correctamente</Text>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                  <Text style={tw`text-white text-xl font-bold`}>Cerrar sesión</Text>
+                </TouchableOpacity>
+              </View>
+            </SafeAreaView>
+        </MainLayout>
     </ProtectedRoute>
   )
 }
@@ -38,7 +42,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
   },
   title: {
     fontSize: 24,
