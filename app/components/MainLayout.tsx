@@ -19,10 +19,6 @@ const MainLayout = ({ children }: PropsWithChildren<{}>) => {
         },
         content: {
           flex: 1,
-          paddingLeft: 80,
-            paddingTop: 20,
-            paddingBottom: 20,
-            paddingRight: 20,
         },
       });
       

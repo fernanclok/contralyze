@@ -19,6 +19,7 @@ import { Feather } from "@expo/vector-icons"
 import { onLogin } from "./LoginTs/login_logic"
 import { showMessage } from "react-native-flash-message"
 import { useAuth } from "./AuthProvider"
+import tw from "twrnc"
 
 
 const LoginScreen = ({  }) => {
