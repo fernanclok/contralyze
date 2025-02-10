@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from './AuthProvider';
+import { UserProvider } from './userContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import FlashMessage from 'react-native-flash-message';
 
@@ -30,15 +31,19 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AuthProvider>
-          <Stack> 
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="register" options={{ headerShown: false }} />
-            <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <FlashMessage position="top" floating={true} />
-        </AuthProvider>
+      <UserProvider>
+          <AuthProvider>
+            <Stack> 
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="register" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
+              <Stack.Screen name='profile/clients/client' options={{ headerShown: false }} />
+              <Stack.Screen name='profile/clients/clientList' options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <FlashMessage position="top" floating={true} />
+          </AuthProvider>
+        </UserProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );

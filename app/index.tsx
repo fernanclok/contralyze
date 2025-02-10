@@ -5,7 +5,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -16,7 +16,7 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
-import { onLogin } from "./LoginTs/login_logic"
+import { onLogin } from "./ts/login_logic"
 import { showMessage } from "react-native-flash-message"
 import { useAuth } from "./AuthProvider"
 import tw from "twrnc"
@@ -99,24 +99,24 @@ const LoginScreen = ({  }) => {
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+            <Pressable  onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
               <Feather name={showPassword ? "eye" : "eye-off"} size={24} color="#4A90E2" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+          <Pressable style={styles.loginButton} onPress={handleLogin} disabled={loading}>
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonText}>Login</Text>}
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity style={styles.forgotPassword}>
+          <Pressable style={styles.forgotPassword}>
             <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account?</Text>
-            <TouchableOpacity onPress={goToRegister}>
+            <Pressable onPress={goToRegister}>
               <Text style={styles.registerButtonText}>Register</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
         </ScrollView>

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants  from 'expo-constants';
 import { showMessage } from 'react-native-flash-message';
@@ -8,6 +7,7 @@ interface LoginResponse {
     user: {
         [key: string]: any;
       };
+    access_token: string;
   }
 
 interface LoginError {
@@ -35,7 +35,7 @@ export async function onLogin(email: string, password: string, navigation: any, 
         if (!apiurl) {
             throw new Error('API_URL not found');
         }
-        const url = `${apiurl}/login`;
+        const url = `${apiurl}/user/login`;
         const response = await axios.post<LoginResponse>(
             url,
             data,
@@ -46,8 +46,8 @@ export async function onLogin(email: string, password: string, navigation: any, 
                 },
             }
         );
-        console.log(response.data);
         const U_information = response.data.user;
+        const token = response.data.access_token;
         if (U_information) {
             await AsyncStorage.setItem('userInfo', JSON.stringify(U_information));
             console.log('User information saved');
@@ -57,6 +57,10 @@ export async function onLogin(email: string, password: string, navigation: any, 
                 type: 'success'
             });
             navigation.navigate('profile/dashboard');
+        }
+        if (token) {
+            await AsyncStorage.setItem("access_token", token);
+            console.log("Token stored successfully");
         }
     } catch (error) {
         console.error(error);
@@ -73,7 +77,7 @@ export async function onLogin(email: string, password: string, navigation: any, 
 export async function onLogout(navigation: any, logout: () => void) {
     console.log('try to logout');
     try {
-        await AsyncStorage.removeItem('userInfo');
+        await AsyncStorage.clear();
         logout();
         showMessage({
             message: 'You have successfully logged out',

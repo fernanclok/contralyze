@@ -6,7 +6,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import { useAuth } from "./AuthProvider"
-import { onRegister } from "./LoginTs/register"
+import { onRegister } from "./ts/register"
 
 const RegisterScreen = () => {
 
@@ -205,9 +205,9 @@ const RegisterScreen = () => {
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
               <Feather name={showPassword ? "eye" : "eye-off"} size={14} color="#4A90E2" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
           
           {renderPasswordStrengthIndicator()}
@@ -222,9 +222,9 @@ const RegisterScreen = () => {
               onChangeText={setConfirmPassword}
               secureTextEntry={!showConfirmPassword}
             />
-            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
+            <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
               <Feather name={showConfirmPassword ? "eye" : "eye-off"} size={14} color="#4A90E2" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
           {confirmPassword !== "" && (
             <Text style={[styles.matchText, passwordsMatch ? styles.matchSuccess : styles.matchError]}>
@@ -232,19 +232,19 @@ const RegisterScreen = () => {
             </Text>
           )}
 
-          <TouchableOpacity
+          <Pressable
             style={[styles.registerButton, (passwordStrength < 4 || !passwordsMatch) && styles.disabledButton]}
             onPress={handleRegister}
             disabled={passwordStrength < 4 || !passwordsMatch}
           >
             <Text style={styles.registerButtonText}>Register</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Have an account?</Text>
-            <TouchableOpacity onPress={onBackToLogin}>
+            <Pressable onPress={onBackToLogin}>
               <Text style={styles.loginButtonText}>Log in</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           </View>
         </ScrollView>

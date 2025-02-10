@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { View, ActivityIndicator } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CookieManager from '@react-native-cookies/cookies';
 
 
 
@@ -47,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const user = await AsyncStorage.getItem('userInfo');
           if (user) {
             setIsAuthenticated(true);
+            setUser(JSON.parse(user));
           }
         }  catch (error) {
           console.error('Error checking authentication status:', error);
@@ -70,34 +70,35 @@ export const useAuth = () => {
     }
     return context;
   };
-
   export function ProtectedRoute({ children }: { children: ReactNode }) {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
-
+    const router = useRouter();  
+  
     useEffect(() => {
       const checkAuth = async () => {
-        const token = await AsyncStorage.getItem('authToken');
-        if (token) {
-          setIsLoading(false);
-        } else {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       };
   
       checkAuth();
     }, []);
   
+    useEffect(() => {
+      if (!isAuthenticated && !isLoading) {
+        router.replace("/");
+      }
+    }, [isAuthenticated, isLoading]);
+  
     if (isLoading) {
-       return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+      return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      );
     }
   
     if (!isAuthenticated) {
-      return <Redirect href="/" />;
+      return null; 
     }
   
     return <>{children}</>;

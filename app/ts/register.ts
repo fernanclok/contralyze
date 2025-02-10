@@ -3,14 +3,7 @@ import { showMessage } from 'react-native-flash-message';
 import Constants  from 'expo-constants';
 
 interface RegisterResponse {
-    token: string;
-    user: {
-        id: number;
-        email: string;
-        last_name: string;
-        first_name: string;
-        role: string;
-    };
+    [key: string]: any;
 }
 
 interface RegisterError {
@@ -43,7 +36,7 @@ export async function onRegister(email: string, password: string, first_name: st
         if (!apiurl) {
             throw new Error('API_URL not found');
         }
-        const url = `${apiurl}/register`;
+        const url = `${apiurl}/user/register`;
         const response = await axios.post<RegisterResponse>(url, data);
         console.log(response.data);
         showMessage({
