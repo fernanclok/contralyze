@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { showMessage } from 'react-native-flash-message';
 import Constants  from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface RegisterResponse {
     [key: string]: any;
@@ -39,12 +40,22 @@ export async function onRegister(email: string, password: string, first_name: st
         const url = `${apiurl}/user/register`;
         const response = await axios.post<RegisterResponse>(url, data);
         console.log(response.data);
-        showMessage({
-            message: 'You have successfully registered',
-            type: 'success'
-        });
-        login(response.data.token);
-        navigation.navigate('profile/dashboard');
+        const U_information = response.data.user;
+        const token = response.data.access_token;
+        if (U_information) {
+            await AsyncStorage.setItem('userInfo', JSON.stringify(U_information));
+            console.log('User information saved');
+            login(U_information);
+            showMessage({
+                message: 'You have successfully registered',
+                type: 'success'
+            });
+            navigation.navigate('profile/dashboard');
+        }
+        if (token) {
+            await AsyncStorage.setItem("access_token", token);
+            console.log("Token stored successfully");
+        }
     } catch (error) {
         console.error(error);
         const err = error as RegisterError;

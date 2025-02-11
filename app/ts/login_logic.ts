@@ -1,7 +1,8 @@
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants  from 'expo-constants';
 import { showMessage } from 'react-native-flash-message';
+import { useUser } from '../userContext';
+import Constants  from 'expo-constants';
+import axios from 'axios';
 
 interface LoginResponse {
     user: {
@@ -57,6 +58,7 @@ export async function onLogin(email: string, password: string, navigation: any, 
                 type: 'success'
             });
             navigation.navigate('profile/dashboard');
+            // Actualizar el contexto del usuario
         }
         if (token) {
             await AsyncStorage.setItem("access_token", token);
@@ -65,11 +67,17 @@ export async function onLogin(email: string, password: string, navigation: any, 
     } catch (error) {
         console.error(error);
         const err = error as LoginError;
-        showMessage({
-            message: err.message + ' Please check your credentials and try again.',
-            type: 'danger'
-        });
-
+        if (err.message === 'Request failed with status code 401') {
+            showMessage({
+                message: 'Invalid email or password',
+                type: 'danger'
+            });
+        } else {
+            showMessage({
+                message: 'Login failed. Please try again.',
+                type: 'danger'
+            });
+        }
     }
 }
 

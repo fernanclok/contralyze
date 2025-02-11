@@ -42,16 +42,7 @@ const ClientList = () => {
         </View>
     );
 
-    if (error) {
-        return (
-            <View style={tw`flex-1 justify-center items-center`}>
-                <Text style={tw`text-red-500 mb-4`}>{error}</Text>
-                <Pressable style={tw`bg-indigo-600 py-2 px-4 rounded-lg`} onPress={fetchClients}>
-                    <Text style={tw`text-white font-bold`}>Reintentar</Text>
-                </Pressable>
-            </View>
-        );
-    }
+
     return (
         <ProtectedRoute>
             <MainLayout>
