@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, Text, Pressable, Animated, Image } from "react-native"
 import { Feather } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
-import { onLogout } from "../ts/login_logic"
+import { onLogout } from "../../hooks/ts/login_logic"
 import { useAuth } from "../AuthProvider"
 import tw from "twrnc"
 

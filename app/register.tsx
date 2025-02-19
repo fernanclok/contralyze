@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import { useAuth } from "./AuthProvider"
-import { onRegister } from "./ts/register"
+import { onRegister } from "../hooks/ts/register"
 
 const RegisterScreen = () => {
 
@@ -123,7 +123,7 @@ const RegisterScreen = () => {
   )
 
   const handleNameChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (text: string) => {
-    const filteredText = text.replace(/[^a-zA-Z]/g, '');
+    const filteredText = text.replace(/[^a-zA-Z\s]/g, '');
     setter(filteredText);
   };
 

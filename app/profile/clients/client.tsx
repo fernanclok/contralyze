@@ -1,7 +1,7 @@
 import { View, Text, TextInput, ScrollView, KeyboardAvoidingView, Platform, Pressable } from "react-native"
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native"
-import { onClient } from "../../ts/clients/newClient";
+import { onClient } from "../../../hooks/ts/clients/newClient";
 import MainLayout from "../../components/MainLayout";
 import { ProtectedRoute } from "../../AuthProvider";
 import { Feather } from "@expo/vector-icons"

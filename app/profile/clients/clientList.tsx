@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native"
-import { getClients } from "../../ts/clients/newClient";
+import { getClients } from "../../../hooks/ts/clients/newClient";
 import MainLayout from "../../components/MainLayout";
 import { ProtectedRoute } from "../../AuthProvider";
 import { useState, useEffect } from "react"

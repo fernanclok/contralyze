@@ -16,7 +16,7 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
-import { onLogin } from "./ts/login_logic"
+import { onLogin } from "../hooks/ts/login_logic"
 import { showMessage } from "react-native-flash-message"
 import { useAuth } from "./AuthProvider"
 import tw from "twrnc"
