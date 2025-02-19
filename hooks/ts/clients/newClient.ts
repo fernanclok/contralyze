@@ -157,7 +157,9 @@ export async function getClients() {
             const clients = JSON.parse(cachedClients);
     
             // Fetch new clients in the background
-    
+
+            console.log(user_id)
+
             fetchAndUpdateClients(access_token, user_id);
 
             return clients;
@@ -195,7 +197,7 @@ export async function fetchAndUpdateClients(access_token: string, user_id: numbe
 
     }
 
-    const url = `${apiurl}/clients/all`;
+    const url = `${apiurl}/clients/all/${user_id}`;
 
     const response = await axios.get<ClientListResponse>(url, {
 

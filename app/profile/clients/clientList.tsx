@@ -17,15 +17,16 @@ interface Client {
 const ClientList = () => {
     const [clients, setClients] = useState([]);
     const [error, setError] = useState<string | null>(null);
-
+    console.log(clients);
     useEffect(() => {
         fetchClients();
     }, []);
 
     const fetchClients = async () => {
         try {
+            console.log("Fetching clients...");
             const clientsData = await getClients();
-            setClients(clientsData.clients || []);
+            setClients(clientsData || []);
             setError(null);
         } catch (err) {
             setError("Error al cargar los clientes");
