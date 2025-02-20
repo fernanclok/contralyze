@@ -1,9 +1,10 @@
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native"
-import { getClients } from "../../../hooks/ts/clients/newClient";
+import { getClients, deleteClient } from "../../../hooks/ts/clients/newClient";
 import MainLayout from "../../components/MainLayout";
 import { ProtectedRoute } from "../../AuthProvider";
 import { useState, useEffect } from "react"
 import { Feather } from "@expo/vector-icons"
+import  Modal_delete  from "../../components/Modal_delete";
 import tw from "twrnc"
 
 interface Client {
@@ -14,14 +15,29 @@ interface Client {
     address: string;
 }
 
+
 const ClientList = () => {
+    
     const [clients, setClients] = useState([]);
     const [error, setError] = useState<string | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedClientId, setSelectedClientId] = useState<Client | null>(null);
 
     useEffect(() => {
         fetchClients();
     }, []);
 
+    const handleDeleteClient = async (id: string) => {
+        if(selectedClientId){
+        try {
+            await deleteClient(selectedClientId);
+            fetchClients();
+            setModalVisible(false);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    }
     const fetchClients = async () => {
         try {
             const clientsData = await getClients();
@@ -32,6 +48,9 @@ const ClientList = () => {
             console.error(err);
         }
     };
+
+
+
 
     const renderClientItem = ({ item }: { item: Client }) => (
         <View style={tw`bg-white rounded-lg shadow-md p-4 mb-4 flex-col justify-center items-center`}>
@@ -50,15 +69,19 @@ const ClientList = () => {
                     <Text style={tw`text-sm text-gray-600`}>{item.address}</Text>
                 </View>
             </View>
-            <View style={tw`flex-row justify-between w-full`}>
-                <Pressable>
+            <View style={tw`flex-row justify-between  w-full`}>
+                <Pressable >
                     <Feather name="edit" size={24} color="blue" />
                 </Pressable>
-                <Pressable>
+                <Pressable onPress={() => { setSelectedClientId(item.id); setModalVisible(true); }}>
                     <Feather name="trash-2" size={24} color="red" />
                 </Pressable>
             </View>
-            
+            <Modal_delete
+                visible={modalVisible}
+                onDelete={handleDeleteClient}
+                onClose={() => setModalVisible(false)}
+            />
         </View>
     );
 
@@ -83,6 +106,7 @@ const ClientList = () => {
                             <Feather name="refresh-cw" size={24} color="white" />
                         </Pressable>
                     </View>
+                    
                     
         </MainLayout>
         </ProtectedRoute>

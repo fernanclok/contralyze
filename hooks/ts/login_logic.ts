@@ -123,7 +123,6 @@ export async function onLogout(navigation: any, logout: () => void) {
     try {
         const apiurl = Constants.expoConfig?.extra?.API_URL;
         const access_token = await getTokens();
-        console.log(access_token);
         if (!apiurl) {
 
             throw new Error('API_URL not found');
@@ -131,7 +130,6 @@ export async function onLogout(navigation: any, logout: () => void) {
         }
 
         const url = `${apiurl}/auth/logout`;
-        console.log(access_token);
         const response = await axios.post<LoginResponse>(url, {}, { 
             headers: { 
                 Authorization: `Bearer ${access_token}`, 
@@ -141,7 +139,6 @@ export async function onLogout(navigation: any, logout: () => void) {
 
         const message = response.data;
         
-        console.log(message);
 
         await AsyncStorage.clear();
     

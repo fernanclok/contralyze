@@ -214,3 +214,72 @@ export async function fetchAndUpdateClients(access_token: string, user_id: numbe
     return response.data;
 }
 
+export async function deleteClient(user_id: string) {
+    
+    try {
+        const access_token = await getTokens();
+
+
+        if (!access_token) {
+
+            throw new Error('Access token not found');
+
+        }
+
+        if(!user_id) {
+            
+            throw new Error('Client ID not found');
+        
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL;
+
+        if (!apiurl) {
+
+            throw new Error('API_URL not found');
+
+        }
+
+        const url = `${apiurl}/clients/client/delete/${user_id}`;
+
+        const response = await axios.delete(url, {
+
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+
+        });
+
+        console.log('Client deleted successfully', response.data);
+
+        if (response.data) {
+
+            // Actualizar la lista de clientes en el almacenamiento
+
+            await fetchAndUpdateClients(access_token, user_id);
+            
+        }
+
+        showMessage({
+            message: 'Client deleted successfully',
+            type: 'success'
+        });
+
+        // Actualizar la lista de clientes en el almacenamiento
+        return response.data;
+
+    } catch (error) {
+
+        console.error(error);
+
+        const err = error as ClientError;
+
+        showMessage({
+            message: err.message + ' Error deleting client',
+            type: 'danger'
+
+        });
+
+        throw error;
+    }
+}
