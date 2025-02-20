@@ -17,14 +17,13 @@ interface Client {
 const ClientList = () => {
     const [clients, setClients] = useState([]);
     const [error, setError] = useState<string | null>(null);
-    console.log(clients);
+
     useEffect(() => {
         fetchClients();
     }, []);
 
     const fetchClients = async () => {
         try {
-            console.log("Fetching clients...");
             const clientsData = await getClients();
             setClients(clientsData || []);
             setError(null);
@@ -35,11 +34,31 @@ const ClientList = () => {
     };
 
     const renderClientItem = ({ item }: { item: Client }) => (
-        <View style={tw`bg-white rounded-lg shadow-md p-4 mb-4`}>
+        <View style={tw`bg-white rounded-lg shadow-md p-4 mb-4 flex-col justify-center items-center`}>
             <Text style={tw`text-lg font-bold text-gray-800`}>{item.name}</Text>
-            <Text style={tw`text-sm text-gray-600`}>{item.email}</Text>
-            <Text style={tw`text-sm text-gray-600`}>{item.phone}</Text>
-            <Text style={tw`text-sm text-gray-600`}>{item.address}</Text>
+            <View style={tw`flex-row justify-between w-full py-4 `}>
+                <View style={tw`flex-col justify-center items-start`}>
+                    <Text style={tw`font-bold mb-2 text-base`}>Email</Text>
+                   <Text style={tw`text-sm text-gray-600`}>{item.email}</Text>
+                </View>
+                <View style={tw`flex-col justify-center items-center`}>
+                    <Text style={tw`font-bold mb-2 text-base`}>Phone</Text>
+                    <Text style={tw`text-sm text-gray-600`}>{item.phone}</Text>
+                </View>
+                <View style={tw`flex-col justify-center items-end`}>
+                    <Text style={tw`font-bold mb-2 text-base`}>Address</Text>
+                    <Text style={tw`text-sm text-gray-600`}>{item.address}</Text>
+                </View>
+            </View>
+            <View style={tw`flex-row justify-between w-full`}>
+                <Pressable>
+                    <Feather name="edit" size={24} color="blue" />
+                </Pressable>
+                <Pressable>
+                    <Feather name="trash-2" size={24} color="red" />
+                </Pressable>
+            </View>
+            
         </View>
     );
 
@@ -48,7 +67,7 @@ const ClientList = () => {
         <ProtectedRoute>
             <MainLayout>
                     <View style={tw`flex-1 p-4 mt-22 mb-22`}>
-                        <Text style={tw`text-2xl font-bold mb-4 text-indigo-700`}>Lista de Clientes</Text>
+                        <Text style={tw`text-2xl font-bold mb-4 text-blue-700`}>Client List</Text>
                         <ScrollView contentContainerStyle={tw`pb-4`}>
                         <FlatList
                             data={clients}

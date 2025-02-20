@@ -3,6 +3,7 @@ import { showMessage } from 'react-native-flash-message';
 import Constants  from 'expo-constants';
 import {getTokens} from '../getTokens';
 import axios from 'axios';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 interface ClientResponse {
 
@@ -130,7 +131,7 @@ export async function getClients() {
     
     try {
     
-        const access_token = await AsyncStorage.getItem('access_token');
+        const access_token = await getTokens();
     
         if (!access_token) {
     
@@ -158,7 +159,6 @@ export async function getClients() {
     
             // Fetch new clients in the background
 
-            console.log(user_id)
 
             fetchAndUpdateClients(access_token, user_id);
 
@@ -198,6 +198,8 @@ export async function fetchAndUpdateClients(access_token: string, user_id: numbe
     }
 
     const url = `${apiurl}/clients/all/${user_id}`;
+
+    
 
     const response = await axios.get<ClientListResponse>(url, {
 
