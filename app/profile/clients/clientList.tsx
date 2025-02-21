@@ -1,10 +1,12 @@
+import { getClients, deleteClient, updateClient } from "../../../hooks/ts/clients/newClient";
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native"
-import { getClients, deleteClient } from "../../../hooks/ts/clients/newClient";
+import  Modal_delete  from "../../components/Modal_delete";
+import Modal_Update from "../../components/Modal_update";
 import MainLayout from "../../components/MainLayout";
 import { ProtectedRoute } from "../../AuthProvider";
-import { useState, useEffect } from "react"
 import { Feather } from "@expo/vector-icons"
-import  Modal_delete  from "../../components/Modal_delete";
+import { useState, useEffect } from "react"
+import { useNavigation } from "expo-router";
 import tw from "twrnc"
 
 interface Client {
@@ -20,8 +22,12 @@ const ClientList = () => {
     
     const [clients, setClients] = useState([]);
     const [error, setError] = useState<string | null>(null);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modalDVisible, setModalDVisible] = useState(false);
+    const [modalUVisible, setModalUVisible] = useState(false);
     const [selectedClientId, setSelectedClientId] = useState<Client | null>(null);
+    const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+    
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchClients();
@@ -32,12 +38,29 @@ const ClientList = () => {
         try {
             await deleteClient(selectedClientId);
             fetchClients();
-            setModalVisible(false);
+            setModalDVisible(false);
         } catch (err) {
             console.error(err);
         }
     }
     }
+
+    const handleUpdateClient = async (updatedClient : Client) =>{
+        if(selectedClient){
+            try{
+
+                await updateClient(updatedClient.id ,updatedClient.name, updatedClient.email, updatedClient.phone, updatedClient.address,navigation )
+
+                fetchClients();
+                setModalUVisible(false);
+
+            }
+            catch(err){
+                console.error(err)
+            }
+        }
+    }
+
     const fetchClients = async () => {
         try {
             const clientsData = await getClients();
@@ -70,17 +93,23 @@ const ClientList = () => {
                 </View>
             </View>
             <View style={tw`flex-row justify-between  w-full`}>
-                <Pressable >
+                <Pressable onPress={() => {setSelectedClient(item); setModalUVisible(true)}}>
                     <Feather name="edit" size={24} color="blue" />
                 </Pressable>
-                <Pressable onPress={() => { setSelectedClientId(item.id); setModalVisible(true); }}>
+                <Pressable onPress={() => { setSelectedClientId(item.id); setModalDVisible(true); }}>
                     <Feather name="trash-2" size={24} color="red" />
                 </Pressable>
             </View>
             <Modal_delete
-                visible={modalVisible}
+                visible={modalDVisible}
                 onDelete={handleDeleteClient}
-                onClose={() => setModalVisible(false)}
+                onClose={() => setModalDVisible(false)}
+            />
+            <Modal_Update
+                visible={modalUVisible}
+                client={selectedClient}
+                onUpdate={handleUpdateClient}
+                onClose={() => setModalUVisible(false)}
             />
         </View>
     );

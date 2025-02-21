@@ -3,7 +3,7 @@ import { showMessage } from 'react-native-flash-message';
 import Constants  from 'expo-constants';
 import {getTokens} from '../getTokens';
 import axios from 'axios';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
 
 interface ClientResponse {
 
@@ -257,7 +257,7 @@ export async function deleteClient(user_id: string) {
             // Actualizar la lista de clientes en el almacenamiento
 
             await fetchAndUpdateClients(access_token, user_id);
-            
+
         }
 
         showMessage({
@@ -281,5 +281,77 @@ export async function deleteClient(user_id: string) {
         });
 
         throw error;
+    }
+}
+
+interface UpdateClientResponse {
+    [key: string]: any;
+}
+
+export async function updateClient(id:number,name: string, email: string, phone: string, address: string, navigation: any){
+    try{
+        console.log('try to update client');
+        if(!id || !name || !email || !phone || !address){
+            throw new Error('Please fill in all fields')
+        }
+        const user = await AsyncStorage.getItem('userInfo');
+
+        if (!user) {
+       
+            throw new Error('User information not found');
+       
+        }
+       
+        const user_id = JSON.parse(user).id;
+
+        const data = {
+            name,
+            email,
+            phone,
+            address
+        }
+
+        const access_token = await getTokens()
+
+        if(!access_token){
+            throw new Error ('No token found')
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL;
+
+        if (!apiurl) {
+
+            throw new Error('API_URL not found');
+
+        }
+
+        const url = `${apiurl}/clients/client/update/${id}`;
+        
+        const response = await axios.put<UpdateClientResponse>(url, data,
+            {
+                headers: {
+                
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                
+                },
+            }
+        );
+
+        console.log('Client updated successfully', response.data);
+
+        showMessage({
+            message: 'Client updated successfully',
+            type: 'success'
+        });
+
+         // Actualizar la lista de clientes en el almacenamiento
+
+         await fetchAndUpdateClients(access_token, user_id);
+
+         navigation.navigate('profile/clients/clientList', { refresh: true });
+
+    }catch(error){
+        console.log(error)
     }
 }
