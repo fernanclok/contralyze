@@ -76,13 +76,13 @@ const ClientList = () => {
 
 
     const renderClientItem = ({ item }: { item: Client }) => (
-        <View style={tw`bg-white rounded-lg shadow-md p-4 mb-4 flex-col justify-center items-center`}>
+        <View style={tw`bg-gray-200 rounded-lg shadow-lg p-4 mb-4 flex-col justify-center items-center`}>
             <Text style={tw`text-lg font-bold text-gray-800`}>{item.name}</Text>
-            <View style={tw`flex-row justify-between w-full py-4 `}>
-                <View style={tw`flex-col justify-center items-start`}>
+            <View style={tw`flex-col justify-center items-center mt-4`}>
                     <Text style={tw`font-bold mb-2 text-base`}>Email</Text>
                    <Text style={tw`text-sm text-gray-600`}>{item.email}</Text>
                 </View>
+            <View style={tw`flex-row justify-between w-full py-4 `}>
                 <View style={tw`flex-col justify-center items-center`}>
                     <Text style={tw`font-bold mb-2 text-base`}>Phone</Text>
                     <Text style={tw`text-sm text-gray-600`}>{item.phone}</Text>

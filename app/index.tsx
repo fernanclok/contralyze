@@ -49,7 +49,6 @@ const LoginScreen = ({  }) => {
     }
     try{
        setLoading(true)
-       console.log('me la pela el loading', loading);
        await onLogin(email, password, navigation, login)
     }catch(err){
       setError("Login failed. Please check your credentials and try again.")
