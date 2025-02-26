@@ -60,7 +60,7 @@ export async function onLogin(email: string, password: string, navigation: any, 
             }
 
         );
-
+        console.log(response.data);
         const U_information = response.data.user;
 
         const token = response.data.token.original;

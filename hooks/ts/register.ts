@@ -12,21 +12,38 @@ interface RegisterError {
 }
 
 interface RegisterRequest {
+    company_name: string;
+    company_email: string;
+    company_size: string;
+    company_phone: string;
+    company_address: string;
+    company_city: string;
+    company_state: string;
+    company_zip: string;
     first_name: string;
     last_name: string;
     email: string;
     password: string;
 }
 
-export async function onRegister(email: string, password: string, first_name: string, last_name: string, navigation: any, login: (token: string) => void) {
+export async function onRegister(email: string, password: string, first_name: string, last_name: string, navigation: any, company_name: string, company_email: string, company_size: string , company_phone: string, company_address: string, company_city: string, company_state: string, company_zip: string, login: (token: string) => void) {
     console.log('try to register');
 
     const data: RegisterRequest = {
+        company_name,
+        company_email,
+        company_size,
+        company_phone,
+        company_address,
+        company_city,
+        company_state,
+        company_zip,
         first_name,
         last_name,
         email,
         password,
     };
+    console.log(data);
 
     try {
         const apiurl = Constants.expoConfig?.extra?.API_URL;
@@ -51,7 +68,7 @@ export async function onRegister(email: string, password: string, first_name: st
         
         const U_information = response.data.user;
         
-        const token = response.data.access_token;
+        const token = response.data.token.original;
         
         if (U_information) {
         
@@ -74,8 +91,9 @@ export async function onRegister(email: string, password: string, first_name: st
         
         if (token) {
         
-            await AsyncStorage.setItem("access_token", token);
-        
+            await AsyncStorage.setItem("access_token", token.access_token);
+            const expirationTime = Date.now() + token.expires_in * 1000;
+            await AsyncStorage.setItem("expires_in", expirationTime.toString());
             console.log("Token stored successfully");
         
         }

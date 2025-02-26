@@ -15,7 +15,7 @@ const menuItems = [
   },
   {
     icon: "users",
-    label: "Clientes",
+    label: "Clients",
     route: null,
     subItems: [
         {label: 'New Client', route: 'profile/clients/client'},
@@ -27,8 +27,8 @@ const menuItems = [
     label: "Profile",
     route: null,
     subItems: [
-      { label: "Editar", route: "EditProfile" },
-      { label: "Configuración", route: "Settings" },
+      { label: "Edit Profile", route: "profile/mainconfig/ManageAccount" },
+      { label: "Manage Company", route: "profile/mainconfig/companyManagement" },
     ],
   },
   {
