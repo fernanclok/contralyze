@@ -14,6 +14,33 @@ const menuItems = [
     subItems: [],
   },
   {
+    icon: "pie-chart",
+    label: "Budgets",
+    route: null,
+    subItems: [
+      {
+        label: 'Budget List',
+        route: 'profile/budgets/list',
+        icon: 'list'
+      },
+      {
+        label: 'New Budget',
+        route: 'profile/budgets/create',
+        icon: 'plus-circle'
+      },
+      {
+        label: 'Budget Requests',
+        route: 'profile/budgets/requests',
+        icon: 'file-text'
+      },
+      {
+        label: 'New Request',
+        route: 'profile/budgets/create-request',
+        icon: 'file-plus'
+      }
+    ],
+  },
+  {
     icon: "users",
     label: "Clientes",
     route: null,

@@ -36,17 +36,18 @@ export async function onLogin(email: string, password: string, navigation: any, 
         if (!apiurl) {
             throw new Error('API_URL not found');
         }
-        const url = `${apiurl}/user/login`;
+        const url = `${apiurl}/auth/login`;
         const response = await axios.post<LoginResponse>(
             url,
             data,
             {
-                withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
                 },
             }
         );
+
+        console.log(response.data);
         const U_information = response.data.user;
         const token = response.data.access_token;
         if (U_information) {

@@ -34,11 +34,12 @@ export default function RootLayout() {
       <UserProvider>
           <AuthProvider>
             <Stack> 
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="register" options={{ headerShown: false }} />
-              <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
-              <Stack.Screen name='profile/clients/client' options={{ headerShown: false }} />
-              <Stack.Screen name='profile/clients/clientList' options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/budgets/requests" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/budgets/create" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/budgets/list" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/clients/client" options={{ headerShown: false }} />
+              <Stack.Screen name="profile/clients/clientList" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
             <FlashMessage position="top" floating={true} />
