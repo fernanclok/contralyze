@@ -4,6 +4,7 @@ import Constants from 'expo-constants'
 import { showMessage } from 'react-native-flash-message'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+/*{  USER FUNCTINOS FETCH, DELETE, UPDATE }*/
 
 // get all users by user company
 interface UserListResponse {
@@ -50,6 +51,53 @@ export async function fetchUsers() {
     }
 }
 
+
+// Create a new user
+export async function addUser(newUser: { first_name: string, last_name:string, email: string, password: string,department_id:string, role: string }) {
+    try {
+        const user = await AsyncStorage.getItem('userInfo')
+
+        if (!user) {
+            throw new Error('User information not found')
+        }
+
+        const Newdata = {
+            ...newUser,
+        }
+
+        const access_token = await getTokens()
+
+        if (!access_token) {
+            throw new Error('Access token not found')
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL
+
+        if (!apiurl) {
+            throw new Error('API_URL not found')
+        }
+
+        const url = `${apiurl}/users/create`
+
+        const response = await axios.post(url, Newdata, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+        })
+
+        return response.data
+    } catch (error) {
+        showMessage({
+            message: 'Error',
+            description: "Error adding user",
+            type: 'danger',
+        })
+        console.error(error)
+    }
+}
+
+
+/*{  COMPANY FUNCTINOS FETCH, DELETE, UPDATE }*/
 
 // get company info by user
 
@@ -98,8 +146,7 @@ export async function fetchCompanyData() {
     }
 }
 
-
-
+/*{  DEPARTMENT FUNCTINS FETCH, DELETE, UPDATE }*/
 
 // get all departaments by user company
 
@@ -153,7 +200,8 @@ export async function fetchDepartaments() {
 // Create a new department
 
 
-export async function addDepartment(name: string, description: string,) {
+export async function addDepartment(newDepartment: { department_name: string, department_description: string }) {
+
     try {
         const user = await AsyncStorage.getItem('userInfo')
 
@@ -163,16 +211,13 @@ export async function addDepartment(name: string, description: string,) {
 
         const ID = JSON.parse(user).company_id
         
-        if(!name || !description){
-            throw new Error('Name or description not found')
-        }
-
-        const newDepartment = {
-            name: name,
-            description: description,
+        
+        const Newdata = {
+            ...newDepartment,
             company_id: ID
         }
 
+        console.log(Newdata)
         const access_token = await getTokens()
 
         if (!access_token) {
@@ -186,9 +231,9 @@ export async function addDepartment(name: string, description: string,) {
             throw new Error('API_URL not found')
         }
 
-        const url = `${apiurl}/departments/create/${ID}`
+        const url = `${apiurl}/departments/create`
 
-        const response = await axios.post(url, newDepartment, {
+        const response = await axios.post(url, Newdata, {
             headers: {
                 'Authorization': `Bearer ${access_token}`,
             },
@@ -199,6 +244,81 @@ export async function addDepartment(name: string, description: string,) {
         showMessage({
             message: 'Error',
             description: "Error adding department",
+            type: 'danger',
+        })
+        console.error(error)
+    }
+}
+
+// Update a department
+export async function updateDepartment(department: { id: any, name: string, description: string }) {
+    try {
+        if (!department.id || !department.name || !department.description) {
+            throw new Error('Invalid department data')
+        }
+
+        const data = {
+            id: department.id,
+            department_name: department.name,
+            department_description: department.description,
+        }
+
+        const access_token = await getTokens()
+
+        if (!access_token) {
+            throw new Error('Access token not found')
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL
+
+        if (!apiurl) {
+            throw new Error('API_URL not found')
+        }
+
+        const url = `${apiurl}/departments/update/${department.id}`
+        console.log(data)
+        const response = await axios.put(url, data, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+        })
+
+        return response.data
+    } catch (error) {
+        showMessage({
+            message: 'Error',
+            description: "Error updating department",
+            type: 'danger',
+        })
+        console.error(error)
+    }
+}
+
+// Delete a department
+export async function deleteDepartment(id: any) {
+    try{
+        if (!id) {
+            throw new Error('Invalid department id')
+        }
+        const access_token = await getTokens()
+        if (!access_token) {
+            throw new Error('Access token not found')
+        }
+        const apiurl = Constants.expoConfig?.extra?.API_URL
+        if (!apiurl) {
+            throw new Error('API_URL not found')
+        }
+        const url = `${apiurl}/departments/delete/${id}`
+        const response = await axios.delete(url, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+        })
+        return response.data
+    } catch (error) {
+        showMessage({
+            message: 'Error',
+            description: "Error deleting department",
             type: 'danger',
         })
         console.error(error)

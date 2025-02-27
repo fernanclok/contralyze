@@ -15,7 +15,7 @@ function Modal_delete({
     visible, 
     onDelete, 
     onClose, 
-    message = "Are you sure that delete this client?", 
+    message ,
     deleteLabel = "Delete", 
     cancelLabel = "Cancel"
   }: ModalDeleteProps) {
