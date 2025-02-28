@@ -4,7 +4,7 @@
     "slug": "contralyze",
     "version": "1.0.0",
     "extra": {
-      "API_URL": "http://192.168.1.73:8000/api"
+      "API_URL": "http://172.18.5.104:3000"
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

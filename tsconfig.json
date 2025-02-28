@@ -11,6 +11,6 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "app/ts/login_logic.ts"
+    "hooks/ts/login_logic.ts"
   ]
 }

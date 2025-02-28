@@ -16,7 +16,7 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
-import { onLogin } from "./ts/login_logic"
+import { onLogin } from "../hooks/ts/login_logic"
 import { showMessage } from "react-native-flash-message"
 import { useAuth } from "./AuthProvider"
 import tw from "twrnc"
@@ -36,7 +36,8 @@ const LoginScreen = ({  }) => {
     const goToRegister = () => {  navigation.navigate('register') }
   
    
-  const handleLogin = () => {
+  const handleLogin = async () => {
+   
     if(!email || !password) {
       setError("Please fill in all fields")
       console.log("Please fill in all fields")
@@ -44,14 +45,11 @@ const LoginScreen = ({  }) => {
         message: 'Please fill in all fields',
         type: 'warning'
       })
-    
       return
     }
-  
-    setLoading(true)
-    setError(null)
     try{
-       onLogin(email, password, navigation, login)
+       setLoading(true)
+       await onLogin(email, password, navigation, login)
     }catch(err){
       setError("Login failed. Please check your credentials and try again.")
       showMessage({
@@ -105,7 +103,12 @@ const LoginScreen = ({  }) => {
           </View>
 
           <Pressable style={styles.loginButton} onPress={handleLogin} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonText}>Login</Text>}
+          {loading ? 
+            <View style={tw`flex-row items-center justify-center gap-2`}>
+              <ActivityIndicator color="white" />
+              <Text style={styles.loginButtonText}>Loading</Text>
+            </View>
+          : <Text style={styles.loginButtonText}>Login</Text>}
           </Pressable>
 
           <Pressable style={styles.forgotPassword}>

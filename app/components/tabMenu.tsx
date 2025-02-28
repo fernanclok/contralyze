@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, Text, Pressable, Animated, Image } from "react-native"
 import { Feather } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
-import { onLogout } from "../ts/login_logic"
+import { onLogout } from "../../hooks/ts/login_logic"
 import { useAuth } from "../AuthProvider"
 import tw from "twrnc"
 
@@ -42,7 +42,7 @@ const menuItems = [
   },
   {
     icon: "users",
-    label: "Clientes",
+    label: "Clients",
     route: null,
     subItems: [
         {label: 'New Client', route: 'profile/clients/client'},
@@ -54,8 +54,8 @@ const menuItems = [
     label: "Profile",
     route: null,
     subItems: [
-      { label: "Editar", route: "EditProfile" },
-      { label: "Configuración", route: "Settings" },
+      { label: "Edit Profile", route: "profile/mainconfig/ManageAccount" },
+      { label: "Manage Company", route: "profile/mainconfig/companyManagement" },
     ],
   },
   {
