@@ -6,7 +6,9 @@ import {
   addDepartment,
   updateDepartment,
   deleteDepartment,
-  addUser
+  addUser,
+  updateUser,
+  deleteUser,
 } from "@/hooks/ts/manage_profile/Manage_company";
 import { useNavigation } from "@react-navigation/native";
 import  Modal_delete  from "../../components/Modal_delete";
@@ -14,7 +16,10 @@ import MainLayout from "../../components/MainLayout";
 import { Picker } from "@react-native-picker/picker";
 import { ProtectedRoute } from "../../AuthProvider";
 import { useState, useEffect } from "react";
+import SlidingModal from "../../components/SlidingModal";
 import tw from "twrnc";
+import { Switch } from "react-native";
+
 
 export default function CompanyManagement() {
   
@@ -29,8 +34,11 @@ export default function CompanyManagement() {
   const [editingDepartment, setEditingDepartment] = useState(null);
   const [newUser, setNewUser] = useState({ first_name: "",last_name:"", email: "", password: "", department_id:"", role: "" });
   const [newDepartment, setNewDepartment] = useState({ department_name: "", department_description: "" });
+  const [userModalVisible, setUserModalVisible] = useState(false);
+  const [departmentModalVisible, setDepartmentModalVisible] = useState(false);
+  const [departmentUpdateModalVisible, setDepartmentUpdateModalVisible] = useState(false);
+  const [userUpdateModalVisible, setUserUpdateModalVisible] = useState(false);
 
-  
   
   
   //  no mostrar el header de la ruta
@@ -49,38 +57,46 @@ export default function CompanyManagement() {
       setDepartments(departmentData);
   };
 
-  const handleUpdateCompany = async () => {
-    // await updateCompany(company);
-    // Alert.alert("Success", "Company information updated");
-  };
 
   const handleUpdateUser = async (user) => {
-    // await updateUser(user);
-    // setEditingUser(null);
-    // await loadData();
+    await updateUser(user);
+    setUserUpdateModalVisible(false);
+    await loadData();
+    setEditingUser(null);
   };
 
   
   const handleAddUser = async () => {
     await addUser(newUser);
-    setNewUser({ first_name: "",last_name:"", email: "", password: "", department_id:"", role: ""});
+    setUserModalVisible(false)
     await loadData();
+    setNewUser({ first_name: "",last_name:"", email: "", password: "", department_id:"", role: ""});
   };
   
-  const handleDeleteUser = async (id) => {
-    // await deleteUser(id);
-    // await loadData();
+  const handleDeleteUser = async () => {
+    if (itemToDelete) {
+      try {
+        await deleteUser(itemToDelete);
+        setModalDVisible(false);
+        await loadData();
+        setItemToDelete(null);
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
   const handleAddDepartment = async () => {
     await addDepartment(newDepartment);
-    setNewDepartment({ department_name: "" , department_description: ""});
+    setDepartmentModalVisible(false)
     await loadData();
+    setNewDepartment({ department_name: "" , department_description: ""});
   };
 
   const handleUpdateDepartment = async (department) => {
     await updateDepartment(department);
     setEditingDepartment(null);
     await loadData();
+    setDepartmentUpdateModalVisible(false);
   };
   
   const handleDeleteDepartment = async () => {
@@ -88,8 +104,8 @@ export default function CompanyManagement() {
       try {
         await deleteDepartment(itemToDelete);
         setModalDVisible(false);
-        setItemToDelete(null);
         await loadData();
+        setItemToDelete(null);
       } catch (err) {
         console.error(err);
       }
@@ -97,8 +113,8 @@ export default function CompanyManagement() {
   };
 
   const confirmDelete = (id, type) => {
-    setItemToDelete(id);
     setDeleteType(type);
+    setItemToDelete(id);
     setModalDVisible(true);
   };
 
@@ -122,14 +138,20 @@ export default function CompanyManagement() {
           <View key={item.id} style={tw`flex-row border-b border-gray-300`}>
             {columns.map((column, index) => (
               <View key={index} style={tw`flex-1 p-3`}>
-                <Text>{item[column.key]}</Text>
+                {column.key === "status" ? (
+                  <Text style={tw`text-${item[column.key] === "active" ? "green" : "red"}-500`}>
+                    {item[column.key]}
+                  </Text>
+                ) : (
+                  <Text>{item[column.key]}</Text>
+                )}
               </View>
             ))}
             <View style={tw`w-24 p-3 flex-row justify-around`}>
               <TouchableOpacity onPress={() => onEdit(item)}>
                 <Text style={tw`text-blue-500`}>Edit</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => confirmDelete(item.id, 'department')}>
+              <TouchableOpacity onPress={() => onDelete(item.id)}>
                 <Text style={tw`text-red-500`}>Delete</Text>
               </TouchableOpacity>
             </View>
@@ -151,22 +173,24 @@ export default function CompanyManagement() {
 
           <View style={tw`m-6`}>
             <Text style={tw`text-lg font-semibold mb-4`}>Company Information</Text>
-            <View style={tw`bg-white rounded-lg p-4 mb-6`}>
+            <View style={tw`bg-white rounded-lg p-4 mb-6 border border-gray-300 shadow`}>
+              <Text style={tw`text-xl font-semibold mb-4`}>Company Details</Text>
+              <Text style={tw`p-2 font-thin text-gray-400`}>Company Name</Text>
               <TextInput
                 style={tw`border border-gray-300 rounded-md p-2 mb-2`}
                 value={company.name}
                 onChangeText={(text) => setCompany({ ...company, name: text })}
                 placeholder="Company Name"
+                readOnly={true}
               />
+              <Text style={tw`p-2 font-thin text-gray-400`}>Company Address</Text>
               <TextInput
                 style={tw`border border-gray-300 rounded-md p-2 mb-2`}
                 value={company.address}
                 onChangeText={(text) => setCompany({ ...company, address: text })}
                 placeholder="Company Address"
+                readOnly={true}
               />
-              <TouchableOpacity style={tw`bg-blue-500 p-2 rounded-md`} onPress={handleUpdateCompany}>
-                <Text style={tw`text-white text-center font-semibold`}>Update Company Info</Text>
-              </TouchableOpacity>
             </View>
           </View>
 
@@ -178,80 +202,16 @@ export default function CompanyManagement() {
                 { title: "Name", key: "first_name" },
                 { title: "Email", key: "email" },
                 { title: "Role", key: "role" },
+                { title: "Status", key: "status"}
               ],
-              setEditingUser,
+              (user) => {
+                setEditingUser(user);
+                setUserUpdateModalVisible(true);
+              },
               (id) => confirmDelete(id, 'user')
             )}
-            {editingUser && (
-              <View style={tw`m-6`}>
-                <Text style={tw`text-lg font-semibold mb-4`}>Edit User</Text>
-                <TextInput
-                  style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                  value={editingUser.first_name}
-                  onChangeText={(text) => setEditingUser({ ...editingUser, first_name: text })}
-                  placeholder="User Name"
-                />
-                <TextInput
-                  style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                  value={editingUser.email}
-                  onChangeText={(text) => setEditingUser({ ...editingUser, email: text })}
-                  placeholder="User Email"
-                />
-                <TouchableOpacity style={tw`bg-blue-500 p-2 rounded-md`} onPress={() => handleUpdateUser(editingUser)}>
-                  <Text style={tw`text-white text-center font-semibold`}>Update User</Text>
-                </TouchableOpacity>
-              </View>
-            )}
             <View style={tw`m-6`}>
-              <Text style={tw`text-lg font-semibold mb-4`}>Add User</Text>
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newUser.first_name}
-                onChangeText={(text) => setNewUser({ ...newUser, first_name: text })}
-                placeholder="New User Name"
-              />
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newUser.last_name}
-                onChangeText={(text) => setNewUser({ ...newUser, last_name: text })}
-                placeholder="New User Last Name"
-              />
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newUser.email}
-                onChangeText={(text) => setNewUser({ ...newUser, email: text })}
-                placeholder="New User Email"
-              />
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newUser.password}
-                onChangeText={(text) => setNewUser({ ...newUser, password: text })}
-                placeholder="New User Password"
-              />
-              
-              <Picker
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                selectedValue={newUser.department_id}
-                onValueChange={(itemValue, itemIndex) =>
-                  setNewUser({ ...newUser, department_id: itemValue })
-                }
-              >
-                {departments.map((department) => (
-                  <Picker.Item key={department.id} label={department.name} value={department.id} />
-                ))}
-              </Picker>
-              <Picker
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                selectedValue={newUser.role}
-                onValueChange={(itemValue, itemIndex) =>
-                  setNewUser({ ...newUser, role: itemValue })
-                }
-              >
-                <Picker.Item label="User" value="user" />
-                <Picker.Item label="Admin" value="admin" />
-              
-              </Picker>
-              <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleAddUser}>
+              <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={() => setUserModalVisible(true)}>
                 <Text style={tw`text-white text-center`}>Add User</Text>
               </TouchableOpacity>
             </View>
@@ -259,56 +219,200 @@ export default function CompanyManagement() {
 
           <View style={tw`m-6`}>
             <Text style={tw`text-xl font-semibold mb-2`}>Departments</Text>
-            {renderTable(departments, [{ title: "Name", key: "name" }, {title:"Description", key: "description"}], setEditingDepartment, (id) => confirmDelete(id, 'department'))}
-            {editingDepartment && (
-              <View style={tw`m-6`}>
-                <Text style={tw`text-lg font-semibold mb-4`}>Edit Department</Text>
-                <TextInput
-                  style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                  value={editingDepartment.name || ""}
-                  onChangeText={(text) => setEditingDepartment({ ...editingDepartment, name: text })}
-                  placeholder="Department Name"
-                />
-                <TextInput
-                  style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                  value={editingDepartment.description || ""}
-                  onChangeText={(text) => setEditingDepartment({ ...editingDepartment, description: text })}
-                  placeholder="Department Description"
-                />
-                <TouchableOpacity
-                  style={tw`bg-blue-500 p-2 rounded-md`}
-                  onPress={() => handleUpdateDepartment(editingDepartment)}
-                >
-                  <Text style={tw`text-white text-center font-semibold`}>Update Department</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            {renderTable(departments, [{ title: "Name", key: "name" }, { title: "Description", key: "description" }], (department) => {
+              setEditingDepartment(department);
+              setDepartmentUpdateModalVisible(true);
+            }, (id) => confirmDelete(id, 'department'))}
             <View style={tw`m-6`}>
-              <Text style={tw`text-lg font-semibold mb-4`}>Add Department</Text>
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newDepartment.department_name}
-                onChangeText={(text) => setNewDepartment({ ...newDepartment, department_name: text })}
-                placeholder="New Department Name"
-              />
-              <TextInput
-                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-                value={newDepartment.department_description}
-                onChangeText={(text) => setNewDepartment({ ...newDepartment, department_description: text })}
-                placeholder="New Department Description"
-              />
-              <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleAddDepartment}>
-                <Text style={tw`text-white text-center font-semibold`}>Add Department</Text>
+              <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={() => setDepartmentModalVisible(true)}>
+                <Text style={tw`text-white text-center`}>Add Department</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
+
         <Modal_delete
           visible={modalDVisible}
           onDelete={deleteType === 'user' ? handleDeleteUser : handleDeleteDepartment}
           onClose={() => setModalDVisible(false)}
           message={`Are you sure you want to delete this ${deleteType}?`}
         />
+
+        {/* Add user modal */}
+        <SlidingModal visible={userModalVisible} onClose={() => setUserModalVisible(false)}>
+          <Text style={tw`text-lg font-semibold mb-4`}>Add New User</Text>
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newUser.first_name}
+            onChangeText={(text) => setNewUser({ ...newUser, first_name: text })}
+            placeholder="New User Name"
+          />
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newUser.last_name}
+            onChangeText={(text) => setNewUser({ ...newUser, last_name: text })}
+            placeholder="New User Last Name"
+          />
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newUser.email}
+            onChangeText={(text) => setNewUser({ ...newUser, email: text })}
+            placeholder="New User Email"
+          />
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newUser.password}
+            onChangeText={(text) => setNewUser({ ...newUser, password: text })}
+            placeholder="New User Password"
+          />
+          <Picker
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            selectedValue={newUser.department_id}
+            onValueChange={(itemValue, itemIndex) =>
+              setNewUser({ ...newUser, department_id: itemValue })
+            }
+          >
+            <Picker.Item label="Select Department" value="" enabled={false} />
+            {departments.map((department) => (
+              <Picker.Item key={department.id} label={department.name} value={department.id} />
+            ))}
+          </Picker>
+          <Picker
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            selectedValue={newUser.role}
+            onValueChange={(itemValue, itemIndex) =>
+              setNewUser({ ...newUser, role: itemValue })
+            }
+          >
+            <Picker.Item label="Select Role" value="" enabled={false} />
+            <Picker.Item label="User" value="user" />
+            <Picker.Item label="Admin" value="admin" />
+          </Picker>
+          <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleAddUser}>
+            <Text style={tw`text-white text-center`}>Add User</Text>
+          </TouchableOpacity>
+        </SlidingModal>
+        
+        {/* Update user modal */}
+        <SlidingModal visible={userUpdateModalVisible} onClose={() => setUserUpdateModalVisible(false)}>
+          <Text style={tw`text-lg font-semibold mb-4`}>Update User</Text>
+            <View style={tw`flex flex-row justify-between items-center mb-2`}>
+              <Text style={tw`font-bold`}>Status</Text>
+              <Switch
+                  trackColor={{ false: "#D1D5DB", true: "#10B981" }} // Gris para inactivo, verde para activo
+                  thumbColor={editingUser?.status === "active" ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
+                  ios_backgroundColor="#D1D5DB" // Color de fondo en iOS cuando está inactivo
+                  style={tw`mt-1`} // Alineación sutil si es necesario
+                  value={editingUser?.status === "active"}
+                  onValueChange={(value) =>
+                    setEditingUser({ ...editingUser, status: value ? "active" : "inactive" })
+                  }
+                />
+            </View>
+            <View>
+              <Text>First Name</Text>
+                <TextInput
+                  style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+                  value={editingUser?.first_name}
+                  onChangeText={(text) => setEditingUser({ ...editingUser, first_name: text })}
+                  placeholder="User Name"
+                />
+            </View>
+            <View>
+              <Text>Last Name</Text>
+                <TextInput
+                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+                value={editingUser?.last_name}
+                onChangeText={(text) => setEditingUser({ ...editingUser, last_name: text })}
+                placeholder="User Last Name"
+              />
+            </View>
+            <View>
+              <Text>Email</Text>
+              <TextInput
+                style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+                value={editingUser?.email}
+                onChangeText={(text) => setEditingUser({ ...editingUser, email: text })}
+                placeholder="User Email"
+              />
+            </View>
+            <View style={tw`flex flex-row justify-center items-center gap-2 mb-2 w-full`}>
+                   <View style={tw`w-1/2`}>
+                      <Text>Department</Text>
+                      <Picker
+                        style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+                        selectedValue={editingUser?.department_id}
+                        onValueChange={(itemValue, itemIndex) =>
+                          setEditingUser({ ...editingUser, department_id: itemValue })
+                        }
+                      >
+                        <Picker.Item label="Select Department" value=""/>
+                      {departments.map((department) => (
+                        <Picker.Item key={department.id} label={department.name} value={department.id} />
+                      ))}
+                    </Picker>
+                   </View>
+                   <View style={tw`w-1/2`}>
+                    <Text>Role</Text>
+                    <Picker
+                      style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+                      selectedValue={editingUser?.role}
+                      onValueChange={(itemValue, itemIndex) =>
+                        setEditingUser({ ...editingUser, role: itemValue })
+                      }
+                    >
+                      <Picker.Item label="Select Role" value=""/>
+                      <Picker.Item label="User" value="user" />
+                      <Picker.Item label="Admin" value="admin" />
+                    </Picker>
+                  </View>
+            </View>
+            
+          <TouchableOpacity style={tw`bg-blue-500 p-2 rounded-md`} onPress={() => handleUpdateUser(editingUser)}>
+            <Text style={tw`text-white text-center`}>Update User</Text>
+          </TouchableOpacity>
+        </SlidingModal>
+
+        {/* Add department modal */}
+        <SlidingModal visible={departmentModalVisible} onClose={() => setDepartmentModalVisible(false)}>
+          <Text style={tw`text-lg font-semibold mb-4`}>Add New Department</Text>
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newDepartment.department_name}
+            onChangeText={(text) => setNewDepartment({ ...newDepartment, department_name: text })}
+            placeholder="New Department Name"
+          />
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={newDepartment.department_description}
+            onChangeText={(text) => setNewDepartment({ ...newDepartment, department_description: text })}
+            placeholder="New Department Description"
+          />
+          <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleAddDepartment}>
+            <Text style={tw`text-white text-center`}>Add Department</Text>
+          </TouchableOpacity>
+        </SlidingModal>
+
+        {/* Update department modal */}
+        <SlidingModal visible={departmentUpdateModalVisible} onClose={() => setDepartmentUpdateModalVisible(false)}>
+          <Text style={tw`text-lg font-semibold mb-4`}>Update Department</Text>
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={editingDepartment?.name}
+            onChangeText={(text) => setEditingDepartment({ ...editingDepartment, name: text })}
+            placeholder="Department Name"
+          />
+          <TextInput
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            value={editingDepartment?.description}
+            onChangeText={(text) => setEditingDepartment({ ...editingDepartment, description: text })}
+            placeholder="Department Description"
+          />
+          <TouchableOpacity style={tw`bg-blue-500 p-2 rounded-md`} onPress={() => handleUpdateDepartment(editingDepartment)}>
+            <Text style={tw`text-white text-center`}>Update Department</Text>
+          </TouchableOpacity>
+        </SlidingModal>
+
       </MainLayout>
     </ProtectedRoute>
   );
