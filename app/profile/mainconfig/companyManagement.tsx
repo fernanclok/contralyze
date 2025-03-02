@@ -85,6 +85,7 @@ export default function CompanyManagement() {
       }
     }
   };
+
   const handleAddDepartment = async () => {
     await addDepartment(newDepartment);
     setDepartmentModalVisible(false)
@@ -112,6 +113,19 @@ export default function CompanyManagement() {
     }
   };
 
+  const onChangeStatus = async (id) => {
+    const user = users.find((user) => user.id === id);
+    if (user) {
+      const updatedUser = { ...user, status: user.status === "active" ? "inactive" : "active" };
+      try {
+        await updateUser(updatedUser);
+        await loadData();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   const confirmDelete = (id, type) => {
     setDeleteType(type);
     setItemToDelete(id);
@@ -121,9 +135,11 @@ export default function CompanyManagement() {
   useEffect(() => {
     loadData();
   }, []);
-  const renderTable = (data, columns, onEdit, onDelete) => (
+
+
+  const renderTable = (data, columns, onEdit, onDelete, isUserTable) => (
     <View style={tw`border border-gray-300 rounded-lg overflow-hidden mb-6`}>
-      <View style={tw`flex-row bg-gray-200 border-b border-gray-300`}>
+      <View style={tw`flex-row bg-gray-300 border-b border-gray-300`}>
         {columns.map((column, index) => (
           <View key={index} style={tw`flex-1 p-3`}>
             <Text style={tw`font-bold text-gray-700`}>{column.title}</Text>
@@ -135,7 +151,7 @@ export default function CompanyManagement() {
       </View>
       {Array.isArray(data) && data.length > 0 ? (
         data.map((item) => (
-          <View key={item.id} style={tw`flex-row border-b border-gray-300`}>
+          <View key={item.id} style={[tw`flex-row border-b border-gray-300 ${item.id % 2 === 0 ? "bg-gray-100" : ""}`,  item.status === "inactive" && { opacity: 0.5 }]}>
             {columns.map((column, index) => (
               <View key={index} style={tw`flex-1 p-3`}>
                 {column.key === "status" ? (
@@ -147,13 +163,31 @@ export default function CompanyManagement() {
                 )}
               </View>
             ))}
-            <View style={tw`w-24 p-3 flex-row justify-around`}>
+            <View style={tw`w-24 p-3 flex justify-around`}>
               <TouchableOpacity onPress={() => onEdit(item)}>
                 <Text style={tw`text-blue-500`}>Edit</Text>
               </TouchableOpacity>
+              {isUserTable  ? (
+              // Solo para usuarios, cambiamos el botón a "Deactivate"
+              <TouchableOpacity onPress={() => onChangeStatus(item.id)}>
+                {/* <Text style={tw`text-orange-500`}>
+                  {item.status === "active" ? "Deactivate" : "Activate"}
+                  </Text> */}
+                <Switch
+                  trackColor={{ false: "#D1D5DB", true: "#10B981" }} // Gris para inactivo, verde para activo
+                  thumbColor={item.status === "active" ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
+                  ios_backgroundColor="#D1D5DB" // Color de fondo en iOS cuando está inactivo
+                  style={tw`mt-1`} // Alineación sutil si es necesario
+                  value={item.status === "active"}
+                  onValueChange={() => onChangeStatus(item.id)}
+                />
+              </TouchableOpacity>
+            ) : (
+              // Solo para departamentos, el botón es "Delete"
               <TouchableOpacity onPress={() => onDelete(item.id)}>
                 <Text style={tw`text-red-500`}>Delete</Text>
               </TouchableOpacity>
+            )}
             </View>
           </View>
         ))
@@ -208,7 +242,7 @@ export default function CompanyManagement() {
                 setEditingUser(user);
                 setUserUpdateModalVisible(true);
               },
-              (id) => confirmDelete(id, 'user')
+              (id) => confirmDelete(id, 'user'), true
             )}
             <View style={tw`m-6`}>
               <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={() => setUserModalVisible(true)}>
@@ -222,7 +256,7 @@ export default function CompanyManagement() {
             {renderTable(departments, [{ title: "Name", key: "name" }, { title: "Description", key: "description" }], (department) => {
               setEditingDepartment(department);
               setDepartmentUpdateModalVisible(true);
-            }, (id) => confirmDelete(id, 'department'))}
+            }, (id) => confirmDelete(id, 'department'),false)}
             <View style={tw`m-6`}>
               <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={() => setDepartmentModalVisible(true)}>
                 <Text style={tw`text-white text-center`}>Add Department</Text>

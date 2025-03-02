@@ -103,6 +103,7 @@ export async function addUser(newUser: { first_name: string, last_name:string, e
     }
 }
 
+// Update a user
 export async function updateUser(user: { id: any, first_name: string, last_name: string, email: string, role: string, status: string, department_id: string }) {
     try {
         if (!user.id || !user.first_name || !user.last_name || !user.email || !user.role || !user.department_id) {
@@ -156,22 +157,33 @@ export async function updateUser(user: { id: any, first_name: string, last_name:
     }
 }
 
-export async function deleteUser(id: any) {
-    try{
-        if (!id) {
-            throw new Error('Invalid user id')
+//  Update user status
+export async function updateUserStatus(id: any, status: string) {
+    try {
+        if (!id || !status) {
+            throw new Error('Invalid user data')
         }
-        console.log(id)
+
+        const data = {
+            id: id,
+            status: status,
+        }
+
         const access_token = await getTokens()
+
         if (!access_token) {
             throw new Error('Access token not found')
         }
+
         const apiurl = Constants.expoConfig?.extra?.API_URL
+
         if (!apiurl) {
             throw new Error('API_URL not found')
         }
-        const url = `${apiurl}/users/delete/${id}`
-        const response = await axios.delete(url, {
+
+        const url = `${apiurl}/users/update/${id}`
+
+        const response = await axios.put(url, data, {
             headers: {
                 'Authorization': `Bearer ${access_token}`,
             },
@@ -179,7 +191,7 @@ export async function deleteUser(id: any) {
 
         showMessage({
             message: 'Success | User',
-            description: "User deleted successfully",
+            description: "User status updated successfully",
             type: 'success',
         })
 
@@ -187,7 +199,7 @@ export async function deleteUser(id: any) {
     } catch (error) {
         showMessage({
             message: 'Error',
-            description: "Error deleting user",
+            description: "Error updating user status",
             type: 'danger',
         })
         console.error(error)
