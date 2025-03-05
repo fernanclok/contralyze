@@ -8,7 +8,6 @@ import {
   deleteDepartment,
   addUser,
   updateUser,
-  deleteUser,
 } from "@/hooks/ts/manage_profile/Manage_company";
 import { useNavigation } from "@react-navigation/native";
 import  Modal_delete  from "../../components/Modal_delete";

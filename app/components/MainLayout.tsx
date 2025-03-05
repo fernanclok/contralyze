@@ -16,14 +16,14 @@ const MainLayout = ({ children }: PropsWithChildren<{}>) => {
     }
 
     const styles = StyleSheet.create({
-        container: {
-          flex: 1,
-          flexDirection: 'row',
-          backgroundColor: 'white',
-        },
-        content: {
-          flex: 1,
-        },
-      });
+      container: {
+        flex: 1,
+        backgroundColor: 'white',
+        paddingVertical:16, // Agrega padding vertical para evitar que el header se esconda
+      },
+      content: {
+        flex: 1,
+      },
+    });
       
       export default MainLayout;

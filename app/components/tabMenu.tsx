@@ -27,7 +27,7 @@ const menuItems = [
     label: "Profile",
     route: null,
     subItems: [
-      { label: "Edit Profile", route: "profile/mainconfig/ManageAccount" },
+      { label: "Edit Profile", route: "profile/mainconfig/EditProfile" },
       { label: "Manage Company", route: "profile/mainconfig/companyManagement" },
     ],
   },
