@@ -104,7 +104,7 @@ export async function addUser(newUser: { first_name: string, last_name:string, e
 }
 
 // Update a user
-export async function updateUser(user: { id: any, first_name: string, last_name: string, email: string, role: string, status: string, department_id: string }) {
+export async function updateUser(user: { id: any, first_name: string, last_name: string, email: string, role: string, isActive: boolean, department_id: string }) {
     try {
         if (!user.id || !user.first_name || !user.last_name || !user.email || !user.role || !user.department_id) {
             throw new Error('Invalid user data')
@@ -116,7 +116,7 @@ export async function updateUser(user: { id: any, first_name: string, last_name:
             last_name: user.last_name,
             email: user.email,
             role: user.role,
-            status: user.status,
+            isActive: user.isActive,
             department_id: user.department_id,
         }
 
@@ -158,15 +158,15 @@ export async function updateUser(user: { id: any, first_name: string, last_name:
 }
 
 //  Update user status
-export async function updateUserStatus(id: any, status: string) {
+export async function updateUserStatus(id: any, isActive: boolean) {
     try {
-        if (!id || !status) {
+        if (!id || !isActive) {
             throw new Error('Invalid user data')
         }
 
         const data = {
             id: id,
-            status: status,
+            isActive: isActive,
         }
 
         const access_token = await getTokens()

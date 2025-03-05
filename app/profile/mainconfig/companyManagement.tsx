@@ -115,7 +115,7 @@ export default function CompanyManagement() {
   const onChangeStatus = async (id) => {
     const user = users.find((user) => user.id === id);
     if (user) {
-      const updatedUser = { ...user, status: user.status === "active" ? "inactive" : "active" };
+      const updatedUser = { ...user, isActive: user.isActive === true ? false : true };
       try {
         await updateUser(updatedUser);
         await loadData();
@@ -150,12 +150,12 @@ export default function CompanyManagement() {
       </View>
       {Array.isArray(data) && data.length > 0 ? (
         data.map((item) => (
-          <View key={item.id} style={[tw`flex-row border-b border-gray-300 ${item.id % 2 === 0 ? "bg-gray-100" : ""}`,  item.status === "inactive" && { opacity: 0.5 }]}>
+          <View key={item.id} style={[tw`flex-row border-b border-gray-300 ${item.id % 2 === 0 ? "bg-gray-100" : ""}`,  item.isActive === false && { opacity: 0.5 }]}>
             {columns.map((column, index) => (
               <View key={index} style={tw`flex-1 p-3`}>
-                {column.key === "status" ? (
-                  <Text style={tw`text-${item[column.key] === "active" ? "green" : "red"}-500`}>
-                    {item[column.key]}
+                {column.key === "isActive" ? (
+                  <Text style={tw`text-${item[column.key] === true ? "green" : "red"}-500`}>
+                    {item[column.key] === true ? "Active" : "Inactive"}
                   </Text>
                 ) : (
                   <Text>{item[column.key]}</Text>
@@ -174,10 +174,10 @@ export default function CompanyManagement() {
                   </Text> */}
                 <Switch
                   trackColor={{ false: "#D1D5DB", true: "#10B981" }} // Gris para inactivo, verde para activo
-                  thumbColor={item.status === "active" ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
+                  thumbColor={item.isActive === true ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
                   ios_backgroundColor="#D1D5DB" // Color de fondo en iOS cuando está inactivo
                   style={tw`mt-1`} // Alineación sutil si es necesario
-                  value={item.status === "active"}
+                  value={item.isActive === true}
                   onValueChange={() => onChangeStatus(item.id)}
                 />
               </TouchableOpacity>
@@ -235,7 +235,7 @@ export default function CompanyManagement() {
                 { title: "Name", key: "first_name" },
                 { title: "Email", key: "email" },
                 { title: "Role", key: "role" },
-                { title: "Status", key: "status"}
+                { title: "Status", key: "isActive"}
               ],
               (user) => {
                 setEditingUser(user);
@@ -333,12 +333,12 @@ export default function CompanyManagement() {
               <Text style={tw`font-bold`}>Status</Text>
               <Switch
                   trackColor={{ false: "#D1D5DB", true: "#10B981" }} // Gris para inactivo, verde para activo
-                  thumbColor={editingUser?.status === "active" ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
+                  thumbColor={editingUser?.isActive === true ? "#fff" : "#9CA3AF"} // Blanco para activo, gris para inactivo
                   ios_backgroundColor="#D1D5DB" // Color de fondo en iOS cuando está inactivo
                   style={tw`mt-1`} // Alineación sutil si es necesario
-                  value={editingUser?.status === "active"}
+                  value={editingUser?.isActive === true}
                   onValueChange={(value) =>
-                    setEditingUser({ ...editingUser, status: value ? "active" : "inactive" })
+                    setEditingUser({ ...editingUser, isActive: value ? true : true })
                   }
                 />
             </View>
