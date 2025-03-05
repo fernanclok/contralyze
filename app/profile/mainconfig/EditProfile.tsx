@@ -1,5 +1,5 @@
 
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert } from "react-native"
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
 import * as ImagePicker from "expo-image-picker"
@@ -58,6 +58,7 @@ export default function EditProfile() {
     });
 
     const [errors, setErrors] = useState({});
+    const [selectedImage, setSelectedImage] = useState(null); // Nuevo estado para la imagen seleccionada
 
     useEffect(() => {
         const loadUserProfile = async () => {
@@ -126,9 +127,11 @@ export default function EditProfile() {
             aspect: [1, 1],
             quality: 1,
         });
-
-        if (!result.canceled && result.assets?.length > 0) {
-            handleChange("profilePicture", result.assets[0].uri);
+    
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const selectedAsset = result.assets[0];
+            setSelectedImage(selectedAsset.uri); // Almacena la URI de la imagen seleccionada
+            handleChange("profilePicture", selectedAsset.uri);
         }
     };
 
@@ -145,17 +148,23 @@ export default function EditProfile() {
             <View style={tw`p-4`}>
                 <View style={tw`items-center mb-6`}>
                 <TouchableOpacity onPress={pickImage}>
-                    {profile.profilePicture ? (
-                    <Image
+                {selectedImage ? (
+                  <Image
+                    source={{ uri: selectedImage }}
+                    style={tw`w-32 h-32 rounded-full`}
+                    onError={(error) => console.log("Error loading image:", error.nativeEvent)}
+                  />
+                ) : profile.profilePicture ? (
+                  <Image
                     source={{ uri: profile.profilePicture ? `${apiurl}${profile.profilePicture}` : '' }}
                     style={tw`w-32 h-32 rounded-full`}
                     onError={(error) => console.log("Error loading image:", error.nativeEvent)}
                   />
-                    ) : (
-                    <View style={tw`w-32 h-32 rounded-full bg-gray-300 items-center justify-center`}>
-                        <Ionicons name="camera" size={40} color="gray" />
-                    </View>
-                    )}
+                ) : (
+                  <View style={tw`w-32 h-32 rounded-full bg-gray-300 items-center justify-center`}>
+                    <Ionicons name="camera" size={40} color="gray" />
+                  </View>
+                )}
                 </TouchableOpacity>
                 <Text style={tw`mt-2 text-blue-500`}>Change your profile picture</Text>
                 </View>
