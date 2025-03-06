@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { SetStateAction, useState } from "react"
 import { View, Text, Pressable, Animated, Image } from "react-native"
 import { Feather } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
@@ -60,7 +60,7 @@ const { logout } = useAuth();
   const handleLogout = () => {
     onLogout(navigation, logout)
   }
-  const toggleSubmenu = (index) => {
+  const toggleSubmenu = (index: number | SetStateAction<null>) => {
     if (activeTab === index) {
       // Cerrar el submenú
       Animated.timing(submenuHeight, {
