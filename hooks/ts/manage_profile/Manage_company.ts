@@ -287,14 +287,14 @@ export async function fetchDepartaments() {
         throw new Error('API_URL not found')
     }
 
-    const url = `${apiurl}/departments/all/${ID}`
+    const url = `${apiurl}/departments/all`
 
     const response = await axios.get<DepartamentResponse>(url, {
         headers: {
             'Authorization': `Bearer ${access_token}`,
         },
     })
-
+    
     return response.data
 } catch (error) {
     showMessage({

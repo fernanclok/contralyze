@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import SlidingModal from "../../components/SlidingModal";
 import tw from "twrnc";
 import { Switch } from "react-native";
+import { showMessage } from "react-native-flash-message";
 
 
 export default function CompanyManagement() {
@@ -49,11 +50,36 @@ export default function CompanyManagement() {
   
   const loadData = async () => {
     const companyData = await fetchCompanyData();
-    const userData = await fetchUsers();
-    const departmentData = await  fetchDepartaments();
+
+    if (!companyData) {
+      showMessage({
+        message: "Error loading company data",
+        type: "danger",
+      });
+      return;
+    }else{
       setCompany(companyData);
+    }
+    const userData = await fetchUsers();
+    if (!userData) {
+      showMessage({
+        message: "Error loading users",
+        type: "danger",
+      });
+      return;
+    }else{
       setUsers(userData);
+    }
+    const departmentData = await  fetchDepartaments();
+    if (!departmentData) {
+      showMessage({
+        message: "Error loading departments",
+        type: "danger",
+      });
+      return;
+    }else{
       setDepartments(departmentData);
+    }
   };
 
 
@@ -300,18 +326,6 @@ export default function CompanyManagement() {
           />
           <Picker
             style={tw`border border-gray-300 rounded-md p-2 mb-2`}
-            selectedValue={newUser.department_id}
-            onValueChange={(itemValue, itemIndex) =>
-              setNewUser({ ...newUser, department_id: itemValue })
-            }
-          >
-            <Picker.Item label="Select Department" value="" enabled={false} />
-            {departments.map((department) => (
-              <Picker.Item key={department.id} label={department.name} value={department.id} />
-            ))}
-          </Picker>
-          <Picker
-            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
             selectedValue={newUser.role}
             onValueChange={(itemValue, itemIndex) =>
               setNewUser({ ...newUser, role: itemValue })
@@ -321,6 +335,27 @@ export default function CompanyManagement() {
             <Picker.Item label="User" value="user" />
             <Picker.Item label="Admin" value="admin" />
           </Picker>
+          {newUser.role === "admin" && (
+            <Text style={tw`text-green-500 mb-2`}>This user will have complete access</Text>
+          )}
+          {newUser.role === "user" && departments.length <= 1 && (
+            <Text style={tw`text-red-500 mb-2`}>Create a new department first</Text>
+          )}
+          <Picker
+            style={tw`border border-gray-300 rounded-md p-2 mb-2`}
+            selectedValue={newUser.department_id}
+            onValueChange={(itemValue, itemIndex) =>
+              setNewUser({ ...newUser, department_id: itemValue })
+            }
+            enabled={newUser.role !== "user" || departments.length > 1} // Desactivar si no hay otros departamentos y el rol es "user"
+          >
+            <Picker.Item label="Select Department" value="" enabled={false} />
+            {departments.map((department) => (
+              <Picker.Item key={department.id} label={department.name} value={department.id} />
+            ))}
+          </Picker>
+          
+
           <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleAddUser}>
             <Text style={tw`text-white text-center`}>Add User</Text>
           </TouchableOpacity>
