@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import { View, Text, Pressable, Animated, Image } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -18,7 +18,7 @@ const menuItems = [
     label: "Budgets",
     route: null,
     subItems: [
-      { label: "Manage Budgets", route: "profile/clients/client" },
+      { label: "Manage Budgets", route: "profile/budgets/MainBudgets" },
     ],
   },
   {
@@ -51,6 +51,18 @@ const BottomTabMenu = () => {
   const [submenuHeight] = useState(new Animated.Value(0));
   const navigation = useNavigation();
   const { logout } = useAuth();
+  const [role, setRole] = useState<string | null>(null); // Estado para almacenar el rol
+
+  // Obtener el rol desde localStorage
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      const parsedUserInfo = JSON.parse(storedUserInfo); // Parsear el JSON almacenado
+      // setRole(parsedUserInfo.role); 
+      setRole('user')
+    }
+  }, []);
+
 
   const handleLogout = () => {
     onLogout(navigation, logout);
@@ -81,7 +93,7 @@ const BottomTabMenu = () => {
       if (route === "Logout") {
         handleLogout();
       } else {
-        navigation.navigate(route);
+        navigation.navigate(route, { role }); // Pasar el rol como parámetro
       }
     } else {
       console.log("No route defined");
