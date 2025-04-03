@@ -4,8 +4,10 @@
     "slug": "contralyze",
     "version": "1.0.0",
     "extra": {
-      "API_URL": "http://192.168.1.70:8000/api",
-      "PHOTO_URL": "http://192.168.1.70:8000/storage/"
+      "API_URL": "http://192.168.1.75:8000/api",
+      "PHOTO_URL": "http://192.168.1.75:8000/storage/",
+      "PUBLIC_PUSHER_KEY": "",
+      "PUBLIC_PUSHER_CLUSTER": ""
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,12 +15,16 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "permissions": ["NOTIFICATIONS"]
       }
     },
     "web": {
