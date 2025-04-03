@@ -58,8 +58,8 @@ const BottomTabMenu = () => {
     const storedUserInfo = localStorage.getItem("userInfo");
     if (storedUserInfo) {
       const parsedUserInfo = JSON.parse(storedUserInfo); // Parsear el JSON almacenado
-      // setRole(parsedUserInfo.role); 
-      setRole('user')
+      setRole(parsedUserInfo.role); 
+      // setRole('user')
     }
   }, []);
 
