@@ -4,10 +4,10 @@
     "slug": "contralyze",
     "version": "1.0.0",
     "extra": {
-      "API_URL": "http://192.168.1.75:8000/api",
-      "PHOTO_URL": "http://192.168.1.75:8000/storage/",
-      "PUBLIC_PUSHER_KEY": "",
-      "PUBLIC_PUSHER_CLUSTER": ""
+      "API_URL": "http://192.168.1.70:8000/api",
+      "PHOTO_URL": "http://192.168.1.70:8000/storage/",
+      "PUBLIC_PUSHER_KEY": "46b2712addbaedf105ba",
+      "PUBLIC_PUSHER_CLUSTER": "us3"
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

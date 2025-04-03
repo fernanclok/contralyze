@@ -127,6 +127,7 @@ const LoginScreen = ({}) => {
           "🎉 Bienvenido!", 
           "Has iniciado sesión exitosamente."
         );
+        navigation.navigate("profile/budgets/MainBudgets"); // Navegar a la pantalla de inicio después de iniciar sesión
       }
     } catch (err) {
       setError("Login failed. Please check your credentials and try again.");
@@ -138,6 +139,12 @@ const LoginScreen = ({}) => {
       setLoading(false);
     }
   };
+  // no mostrar el header de la pantalla de login
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>

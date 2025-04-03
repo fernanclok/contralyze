@@ -16,6 +16,7 @@ LogBox.ignoreLogs([
   'Unknown event handler property', // Ignora advertencias específicas  
 ]);
 
+
 const DashboardScreen = () => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
@@ -240,10 +241,16 @@ const DashboardScreen = () => {
     handleGetInfo();
   }, []);
 
+    // no mostrar el header de la pantalla de login
+    useEffect(() => {
+      navigation.setOptions({
+        headerShown: false,
+      });
+    }, [navigation]);
   return (
     <ProtectedRoute>
       <MainLayout>
-        <SafeAreaView style={[styles.container, tw`py-12 mt-12`]}>
+        <SafeAreaView style={[styles.container, tw`py-12`]}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {chartData?.chart_data && (
               <View style={styles.tabsContainer}>
