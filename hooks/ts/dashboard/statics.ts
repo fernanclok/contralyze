@@ -27,7 +27,7 @@ export async function getStatics() {
         };
 
         const response = await axios.get(
-            `${Constants.manifest.extra.API_URL}/budgets/all/statistics`,
+            `${Constants.expoConfig.extra.API_URL}/budgets/all/statistics`,
             { 
                 headers, 
             }
@@ -59,7 +59,7 @@ export async function getLinesData() {
         };
 
         const response = await axios.get(
-            `${Constants.manifest.extra.API_URL}/budgets/all/info-cards`,
+            `${Constants.expoConfig.extra.API_URL}/budgets/all/info-cards`,
             { headers }
         );
 
@@ -89,7 +89,7 @@ export async function getTransactinsPerMonth() {
         };
 
         const response = await axios.get(
-            `${Constants.manifest.extra.API_URL}/transactions/all/statics`,
+            `${Constants.expoConfig.extra.API_URL}/transactions/all/statics`,
             { headers }
         );
 
@@ -120,7 +120,7 @@ export async function getTransactionList(){
         };
 
         const response = await axios.get(
-            `${Constants.manifest.extra.API_URL}/transactions/last/department`,
+            `${Constants.expoConfig?.extra?.API_URL}/transactions/last/department`,
             { headers }
         );
 

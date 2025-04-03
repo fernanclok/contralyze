@@ -22,17 +22,17 @@ const MainBudgets: React.FC = () => {
       <ProtectedRoute>
         <MainLayout>
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={tw`flex-1`}>
-            <div style={tw`p-4 flex-1 mt-12`}>
+            <View style={tw`p-4 flex-1 py-12`}>
               {role === "admin" ? (
-                <ScrollView style={tw`h-full`}>
+                <View style={tw`h-full`}>
                   <BudgetAdminScreen />
-                </ScrollView>
+                </View>
               ) : (
-                <ScrollView>
+                <View>
                   <UserBudgetRequestsScreen />
-                </ScrollView>
+                </View>
               )}
-            </div>
+            </View>
           </KeyboardAvoidingView>
         </MainLayout>
       </ProtectedRoute>
