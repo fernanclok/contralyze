@@ -47,7 +47,26 @@ const LoginScreen = ({}) => {
   };
 
   // Configuración de Pusher
-  const { showLocalNotification } = usePusher();
+  const { showLocalNotification, subscribeToChannel } = usePusher();
+
+  useEffect(() => {
+    // Suscribirse al canal de notificaciones del usuario
+    const unsubscribe = subscribeToChannel(
+      "user-channel", // Cambiar por el canal correspondiente
+      "new-notification",
+      (data) => {
+        console.log("Notificación recibida:", data);
+        showLocalNotification(
+          data.title || "Nueva notificación",
+          data.message || "Has recibido una nueva notificación"
+        );
+      }
+    );
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [subscribeToChannel, showLocalNotification]);
 
   // Solicita permisos para notificaciones (versión simplificada)
   async function requestNotificationPermissions() {
