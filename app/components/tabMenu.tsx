@@ -13,6 +13,7 @@ const menuItems = [
     route: "profile/dashboard",
     subItems: [],
   },
+
   {
     icon: "dollar-sign",
     label: "Budgets",
