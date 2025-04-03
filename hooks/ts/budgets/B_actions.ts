@@ -28,7 +28,7 @@ export async function getBudgetsRequests(){
             'Authorization': `Bearer ${access_token}`
         };
 
-        const response = await axios.get(`${Constants.manifest.extra.API_URL}/budget-requests/all`,
+        const response = await axios.get(`${Constants.expoConfig?.extra?.API_URL}/budget-requests/all`,
              { headers }
             );
         
@@ -73,7 +73,7 @@ export async function approveBudgetRequest(id: number) {
         };
 
         const response = await axios.put(
-            `${Constants.manifest.extra.API_URL}/budget-requests/${id}/approve`,
+            `${Constants.expoConfig?.extra?.API_URL}/budget-requests/${id}/approve`,
             {},
             { headers }
         );
@@ -127,7 +127,7 @@ export async function rejectBudgetRequest(id: number)
         };
 
         const response = await axios.put(
-            `${Constants.manifest.extra.API_URL}/budget-requests/${id}/reject`,
+            `${Constants.expoConfig?.extra?.API_URL}/budget-requests/${id}/reject`,
             {},
             { headers }
         );
@@ -181,7 +181,7 @@ export async function getAllBudgetsByUser(id:number)
         };
 
         const response = await axios.get(
-            `${Constants.manifest.extra.API_URL}/budget-requests/all`,
+            `${Constants.expoConfig?.extra?.API_URL}/budget-requests/all`,
             { 
                 headers, 
                 params: { userId: id } 

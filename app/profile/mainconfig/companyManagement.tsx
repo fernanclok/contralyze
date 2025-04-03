@@ -227,7 +227,7 @@ export default function CompanyManagement() {
   return (
     <ProtectedRoute>
       <MainLayout>
-        <ScrollView style={tw`flex-1  py-24`}>
+        <ScrollView style={tw`flex-1  py-12`}>
           <Text style={tw`text-3xl font-bold mb-4`}>Company Management</Text>
 
           <View style={tw`m-6`}>

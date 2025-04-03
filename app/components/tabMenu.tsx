@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { onLogout } from "../../hooks/ts/login_logic";
 import { useAuth } from "../AuthProvider";
 import tw from "twrnc";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const menuItems = [
   {
@@ -56,12 +57,20 @@ const BottomTabMenu = () => {
 
   // Obtener el rol desde localStorage
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      const parsedUserInfo = JSON.parse(storedUserInfo); // Parsear el JSON almacenado
-      // setRole(parsedUserInfo.role); 
-      setRole('user')
-    }
+    const fetchUserInfo = async () => {
+      try {
+        const storedUserInfo = await AsyncStorage.getItem("userInfo"); // Espera a que se resuelva la promesa
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo); // Parsea el JSON almacenado
+          console.log("Stored user info:", parsedUserInfo);
+          setRole(parsedUserInfo.role); // Establece el rol desde los datos almacenados
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+  
+    fetchUserInfo();
   }, []);
 
 
