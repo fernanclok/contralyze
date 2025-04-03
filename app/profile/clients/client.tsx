@@ -6,6 +6,7 @@ import MainLayout from "../../components/MainLayout";
 import { ProtectedRoute } from "../../AuthProvider";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 import tw from "twrnc";
 
 const ClientsScreen = () => {
@@ -88,10 +89,9 @@ const ClientsScreen = () => {
     <ProtectedRoute>
       <MainLayout>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={tw`flex-1`}>
-          <ScrollView contentContainerStyle={tw`flex-grow justify-center`}>
-            <View style={tw`px-6 py-8 bg-white rounded-3xl mx-4 my-8 shadow-lg`}>
-              <Text style={tw`text-3xl font-bold mb-6 text-center text-blue-500`}>Registro de Cliente</Text>
-
+          <ScrollView contentContainerStyle={tw`flex-grow justify-center p-4`}>
+              <Text style={tw`text-2xl font-bold mb-6 text-center text-gray-800`}>Registro de Cliente</Text>
+            <View style={tw`px-6 py-8 bg-white rounded-3xl my-8 shadow-lg`}>
               <View style={tw`mb-4`}>
                 <Text style={tw`text-sm font-medium text-gray-600 mb-1`}>Nombre</Text>
                 <View style={tw`flex-row items-center border-b border-gray-300`}>
@@ -150,9 +150,9 @@ const ClientsScreen = () => {
                 {addressError ? <Text style={tw`text-red-500 text-xs`}>{addressError}</Text> : null}
               </View>
 
-              <Pressable style={tw`bg-blue-600 py-3 px-4 rounded-xl shadow-md`} onPress={handleSubmit}>
+              <TouchableOpacity style={tw`bg-green-500 p-2 rounded-md`} onPress={handleSubmit}>
                 <Text style={tw`text-white text-center font-bold text-lg`}>Registrar Cliente</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

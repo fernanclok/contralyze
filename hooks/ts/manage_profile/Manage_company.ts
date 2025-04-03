@@ -53,7 +53,7 @@ export async function fetchUsers() {
 
 
 // Create a new user
-export async function addUser(newUser: { first_name: string, last_name:string, email: string, password: string,department_id:string, role: string }) {
+export async function addUser(newUser: { first_name: string, last_name:string, email: string, password: string,role: string, department_id:string,  }) {
     try {
         const user = await AsyncStorage.getItem('userInfo')
 
@@ -63,6 +63,7 @@ export async function addUser(newUser: { first_name: string, last_name:string, e
 
         const Newdata = {
             ...newUser,
+
         }
 
         const access_token = await getTokens()
@@ -85,6 +86,12 @@ export async function addUser(newUser: { first_name: string, last_name:string, e
             },
         })
 
+        showMessage({
+            message: "Success | User",
+            description: "User created successfully",
+            type: 'success'
+        })
+
         return response.data
     } catch (error) {
         showMessage({
@@ -96,6 +103,108 @@ export async function addUser(newUser: { first_name: string, last_name:string, e
     }
 }
 
+// Update a user
+export async function updateUser(user: { id: any, first_name: string, last_name: string, email: string, role: string, isActive: boolean, department_id: string }) {
+    try {
+        if (!user.id || !user.first_name || !user.last_name || !user.email || !user.role || !user.department_id) {
+            throw new Error('Invalid user data')
+        }
+
+        const data = {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive,
+            department_id: user.department_id,
+        }
+
+        const access_token = await getTokens()
+
+        if (!access_token) {
+            throw new Error('Access token not found')
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL
+
+        if (!apiurl) {
+            throw new Error('API_URL not found')
+        }
+
+        const url = `${apiurl}/users/update/${user.id}`
+
+        const response = await axios.put(url, data, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+        })
+
+        showMessage({
+            message: 'Success | User',
+            description: "User updated successfully",
+            type: 'success',
+        })
+
+        return response.data
+    } catch (error) {
+        showMessage({
+            message: 'Error',
+            description: "Error updating user",
+            type: 'danger',
+        })
+        console.error(error)
+    }
+}
+
+//  Update user status
+export async function updateUserStatus(id: any, isActive: boolean) {
+    try {
+        if (!id || !isActive) {
+            throw new Error('Invalid user data')
+        }
+
+        const data = {
+            id: id,
+            isActive: isActive,
+        }
+
+        const access_token = await getTokens()
+
+        if (!access_token) {
+            throw new Error('Access token not found')
+        }
+
+        const apiurl = Constants.expoConfig?.extra?.API_URL
+
+        if (!apiurl) {
+            throw new Error('API_URL not found')
+        }
+
+        const url = `${apiurl}/users/update/${id}`
+
+        const response = await axios.put(url, data, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+            },
+        })
+
+        showMessage({
+            message: 'Success | User',
+            description: "User status updated successfully",
+            type: 'success',
+        })
+
+        return response.data
+    } catch (error) {
+        showMessage({
+            message: 'Error',
+            description: "Error updating user status",
+            type: 'danger',
+        })
+        console.error(error)
+    }
+}
 
 /*{  COMPANY FUNCTINOS FETCH, DELETE, UPDATE }*/
 
@@ -178,14 +287,14 @@ export async function fetchDepartaments() {
         throw new Error('API_URL not found')
     }
 
-    const url = `${apiurl}/departments/all/${ID}`
+    const url = `${apiurl}/departments/all`
 
     const response = await axios.get<DepartamentResponse>(url, {
         headers: {
             'Authorization': `Bearer ${access_token}`,
         },
     })
-
+    
     return response.data
 } catch (error) {
     showMessage({
@@ -239,6 +348,12 @@ export async function addDepartment(newDepartment: { department_name: string, de
             },
         })
 
+        showMessage({
+            message: 'Success | Department',
+            description: "Department created Successuly",
+            type: 'success'
+        })
+
         return response.data
     } catch (error) {
         showMessage({
@@ -283,6 +398,12 @@ export async function updateDepartment(department: { id: any, name: string, desc
             },
         })
 
+        showMessage({
+            message: 'Success | Department',
+            description: "Department updated successfully",
+            type: 'success',
+        })
+
         return response.data
     } catch (error) {
         showMessage({
@@ -314,6 +435,13 @@ export async function deleteDepartment(id: any) {
                 'Authorization': `Bearer ${access_token}`,
             },
         })
+
+        showMessage({
+            message: 'Success | Department',
+            description: "Department deleted successfully",
+            type: 'success',
+        })
+
         return response.data
     } catch (error) {
         showMessage({

@@ -125,7 +125,7 @@ const ClientList = () => {
                             data={clients}
                             renderItem={renderClientItem}
                             keyExtractor={(item) => item.id}
-                            ListEmptyComponent={<Text style={tw`text-center text-gray-500`}>No hay clientes para mostrar</Text>}
+                            ListEmptyComponent={<Text style={tw`text-center text-gray-500`}>Not Clients to show</Text>}
                         />
                         </ScrollView>
                         <Pressable
