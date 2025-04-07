@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   ImageBackground,
   Image,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -21,9 +22,9 @@ import { showMessage } from "react-native-flash-message";
 import { useAuth } from "./AuthProvider";
 import tw from "twrnc";
 import * as Notifications from "expo-notifications";
-import { Alert } from "react-native";
 import * as Device from "expo-device";
 import { usePusher } from "../hooks/usePusher";
+import Constants from "expo-constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -50,21 +51,34 @@ const LoginScreen = ({}) => {
   const { showLocalNotification, subscribeToChannel } = usePusher();
 
   useEffect(() => {
-    // Suscribirse al canal de notificaciones del usuario
-    const unsubscribe = subscribeToChannel(
-      "user-channel", // Cambiar por el canal correspondiente
+    // Subscribe to the user's notification channel
+    const unsubscribeUserChannel = subscribeToChannel(
+      "user-channel", // Replace with the corresponding channel
       "new-notification",
       (data) => {
-        console.log("Notificación recibida:", data);
+        console.log("Notification received:", data);
         showLocalNotification(
-          data.title || "Nueva notificación",
-          data.message || "Has recibido una nueva notificación"
+          data.title || "New Notification",
+          data.message || "You have received a new notification"
         );
       }
     );
 
+    // Suscribirse al canal de presupuestos
+    const unsubscribeBudgetChannel = subscribeToChannel(
+      "budget-channel", // Channel for budgets
+      "new-budget",
+      (data) => {
+      console.log("New budget created:", data);
+      showLocalNotification(
+        "New Budget",
+        `A new budget has been created: ${data.budgetName || "Unnamed"}`
+      );
+      }
+    );
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribeUserChannel) unsubscribeUserChannel();
+      if (unsubscribeBudgetChannel) unsubscribeBudgetChannel();
     };
   }, [subscribeToChannel, showLocalNotification]);
 
@@ -81,13 +95,13 @@ const LoginScreen = ({}) => {
       }
 
       if (finalStatus !== "granted") {
-        Alert.alert("No se pudieron habilitar las notificaciones");
+        Alert.alert("Notifications could not be enabled");
         return false;
       }
       return true;
-    } else {
+        } else {
       Alert.alert(
-        "Debes usar un dispositivo físico para recibir notificaciones."
+        "You must use a physical device to receive notifications."
       );
       return false;
     }
@@ -104,6 +118,63 @@ const LoginScreen = ({}) => {
     });
   }
 
+  useEffect(() => {
+    // Configure push notifications
+    const configureNotifications = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== "granted") {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus !== "granted") {
+          Alert.alert("Push notifications could not be enabled.");
+          return;
+        }
+
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log("Expo Push Token:", token);
+
+        // Send the token to the backend
+        await fetch(`${Constants.expoConfig?.extra?.API_URL}/register-push-token`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+      } else {
+        Alert.alert("You must use a physical device to receive push notifications.");
+      }
+
+      if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.MAX,
+        });
+      }
+    };
+
+    configureNotifications();
+
+    // Listener for incoming notifications
+    const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
+      console.log("Notification received:", notification);
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log("Notification response:", response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Please fill in all fields");
@@ -119,13 +190,13 @@ const LoginScreen = ({}) => {
       await onLogin(email, password, navigation, login);
       const hasPermission = await requestNotificationPermissions();
       if (hasPermission) {
-        await sendLocalNotification("🎉 Bienvenido!", "Has iniciado sesión exitosamente.");
+        await sendLocalNotification("Welcome!", "You have successfully logged in.");
       }
 
       if (hasPermission) {
         await showLocalNotification(
-          "🎉 Bienvenido!", 
-          "Has iniciado sesión exitosamente."
+          "Welcome!", 
+          "You have successfully logged in."
         );
       }
     } catch (err) {

@@ -7,6 +7,8 @@ import { ProtectedRoute } from '../../AuthProvider';
 import MainLayout from '../../components/MainLayout';
 import BudgetCard from '../../components/Budget/BudgetCard';
 import tw from 'twrnc';
+import { usePusher } from '../../../hooks/usePusher';
+import * as Notifications from "expo-notifications";
 
 const BudgetListScreen = () => {
   const navigation = useNavigation();
@@ -33,6 +35,27 @@ const BudgetListScreen = () => {
 
   useEffect(() => {
     fetchBudgets();
+
+    // Configure Pusher
+    const { subscribeToChannel } = usePusher();
+
+    const unsubscribe = subscribeToChannel('budget-requests', ['new-request', 'request-approved', 'request-rejected'], (data) => {
+      console.log('Event received:', data);
+      fetchBudgets(); // Update the budget list
+
+      // Show push notification
+      Notifications.scheduleNotificationAsync({
+      content: {
+        title: "📋 Budget Update",
+        body: `Event: ${data.event}. Check the budgets.`,
+      },
+      trigger: null,
+      });
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   return (
@@ -74,4 +97,4 @@ const BudgetListScreen = () => {
   );
 };
 
-export default BudgetListScreen; 
+export default BudgetListScreen;

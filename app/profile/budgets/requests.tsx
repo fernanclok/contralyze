@@ -7,6 +7,7 @@ import { getBudgetRequests, deleteBudgetRequest } from '../../ts/budgets/budgetR
 import { ProtectedRoute } from '../../AuthProvider';
 import MainLayout from '../../components/MainLayout';
 import tw from 'twrnc';
+import { usePusher } from '../../../hooks/usePusher';
 
 const BudgetRequestsScreen = () => {
   const navigation = useNavigation();
@@ -33,6 +34,18 @@ const BudgetRequestsScreen = () => {
 
   useEffect(() => {
     fetchRequests();
+
+    // Configure Pusher
+    const { subscribeToChannel } = usePusher();
+
+    const unsubscribe = subscribeToChannel('budget-requests', ['new-request', 'request-approved', 'request-rejected'], (data) => {
+      console.log('Event received:', data);
+      fetchRequests(); // Update the list of requests
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const handleDelete = async (id: number) => {
@@ -135,4 +148,4 @@ const BudgetRequestsScreen = () => {
   );
 };
 
-export default BudgetRequestsScreen; 
+export default BudgetRequestsScreen;

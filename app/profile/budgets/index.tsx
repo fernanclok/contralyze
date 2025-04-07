@@ -7,6 +7,7 @@ import { getBudgets } from '../../ts/budgets/budgetService';
 import { ProtectedRoute } from '../../AuthProvider';
 import MainLayout from '../../components/MainLayout';
 import tw from 'twrnc';
+import { usePusher } from '../../../hooks/usePusher';
 
 const BudgetHomeScreen = () => {
   const navigation = useNavigation();
@@ -17,6 +18,18 @@ const BudgetHomeScreen = () => {
 
   useEffect(() => {
     fetchBudgets();
+
+    // Configurar Pusher
+    const { subscribeToChannel } = usePusher();
+
+    const unsubscribe = subscribeToChannel('budget-requests', ['new-request', 'request-approved', 'request-rejected'], (data) => {
+      console.log('Event received:', data);
+      fetchBudgets(); // Update stats and recent budgets
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const fetchBudgets = async () => {
@@ -162,4 +175,4 @@ const BudgetHomeScreen = () => {
   );
 };
 
-export default BudgetHomeScreen; 
+export default BudgetHomeScreen;

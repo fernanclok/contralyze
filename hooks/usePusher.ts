@@ -10,7 +10,11 @@ interface PusherEvent {
 }
 
 interface PusherHookResult {
-  subscribeToChannel: (channelName: string, eventName: string, callback: (data: PusherEvent) => void) => (() => void) | null;
+  subscribeToChannel: (
+    channelName: string,
+    eventName: string,
+    callback: (data: PusherEvent) => void
+  ) => (() => void) | null;
   showLocalNotification: (title: string, body: string) => void;
 }
 
