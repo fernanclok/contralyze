@@ -4,8 +4,8 @@
     "slug": "contralyze",
     "version": "1.0.0",
     "extra": {
-      "API_URL": "http://192.168.0.61:8000/api",
-      "PHOTO_URL": "http://192.168.0.61:8000/storage/",
+      "API_URL": "http://172.18.1.50:8000/api",
+      "PHOTO_URL": "http://172.18.1.50:8000/storage/",
       "PUBLIC_PUSHER_KEY": "46b2712addbaedf105ba",
       "PUBLIC_PUSHER_CLUSTER": "us3"
     },

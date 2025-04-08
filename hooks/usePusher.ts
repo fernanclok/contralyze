@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Pusher from "pusher-js";
+import Pusher from "pusher-js";   
+import  Constants  from "expo-constants";
 import { showMessage } from "react-native-flash-message";
 
 // Definiciones de tipos
@@ -16,10 +17,18 @@ interface PusherHookResult {
 
 const usePusher = (): PusherHookResult => {
   const [pusherClient, setPusherClient] = useState<Pusher | null>(null);
-
+  const { PUBLIC_PUSHER_KEY, PUBLIC_PUSHER_CLUSTER } = Constants.expoConfig?.extra || {};
+  
+  if (!PUBLIC_PUSHER_KEY || !PUBLIC_PUSHER_CLUSTER) {
+    console.error("Pusher keys are missing in app.json");
+    return {
+      subscribeToChannel: () => null,
+      showLocalNotification: () => {},
+    };
+  }
   useEffect(() => {
-    const pusher = new Pusher("PUBLIC_PUSHER_KEY", {
-      cluster: "PUBLIC_PUSHER_CLUSTER",
+    const pusher = new Pusher(PUBLIC_PUSHER_KEY, {
+      cluster: PUBLIC_PUSHER_CLUSTER,
       forceTLS: true,
     });
     setPusherClient(pusher);

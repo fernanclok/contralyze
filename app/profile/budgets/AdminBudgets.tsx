@@ -6,6 +6,7 @@ import tw from 'twrnc'; // Tailwind React Native Classnames
 import { Ionicons } from '@expo/vector-icons';
 import { getBudgetsRequests,approveBudgetRequest, rejectBudgetRequest } from '@/hooks/ts/budgets/B_actions'; // Importa la función de solicitud de presupuestos
 import { showMessage } from 'react-native-flash-message';
+import { usePusher } from "@/hooks/usePusher"; 
 
 // Obtener las dimensiones de la pantalla
 const { height } = Dimensions.get('window');
@@ -19,6 +20,7 @@ export default function BudgetAdminScreen() {
   const [budgets, setBudgets] = useState<{ id: number; status: string; requested_amount: string; category?: { name: string }; user?: { first_name: string; last_name: string }; request_date: string }[]>([]); // Inicialmente vacío
   const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected'
   const [loading, setLoading] = useState(true); // Estado para manejar el indicador de carga
+  const { subscribeToChannel } = usePusher(); // Usa el hook de Pusher
 
   // Función para cargar los presupuestos desde la API
   const fetchBudgets = async () => {
@@ -37,6 +39,67 @@ export default function BudgetAdminScreen() {
   useEffect(() => {
     fetchBudgets();
   }, []);
+useEffect(() => {
+  const unsubscribeRejected = subscribeToChannel(
+    "budget-requests",
+    "request-rejected",
+    (data) => {
+      const updatedBudget = data.budget_request;
+      setBudgets((prevBudgets) =>
+        prevBudgets.map((budget) =>
+          budget.id === updatedBudget.id ? { ...budget, ...updatedBudget } : budget
+        )
+      );
+      showMessage({
+        message: "Presupuesto rechazado",
+        description: `El presupuesto con ID ${updatedBudget.id} ha sido rechazado.`,
+        type: "danger",
+      });
+    }
+  );
+
+  const unsubscribeApproved = subscribeToChannel(
+    "budget-requests",
+    "request-approved",
+    (data) => {
+      const updatedBudget = data.budget_request;
+      setBudgets((prevBudgets) =>
+        prevBudgets.map((budget) =>
+          budget.id === updatedBudget.id ? { ...budget, ...updatedBudget } : budget
+        )
+      );
+      showMessage({
+        message: "Presupuesto aprobado",
+        description: `El presupuesto con ID ${updatedBudget.id} ha sido aprobado.`,
+        type: "success",
+      });
+    }
+  );
+
+  const unsubscribeUpdated = subscribeToChannel(
+    "budget-requests",
+    "request-updated",
+    (data) => {
+      const updatedBudget = data.budget_request;
+      setBudgets((prevBudgets) =>
+        prevBudgets.map((budget) =>
+          budget.id === updatedBudget.id ? { ...budget, ...updatedBudget } : budget
+        )
+      );
+      showMessage({
+        message: "Presupuesto actualizado",
+        description: `El presupuesto con ID ${updatedBudget.id} ha sido actualizado.`,
+        type: "info",
+      });
+    }
+  );
+
+  return () => {
+    if (unsubscribeRejected) unsubscribeRejected();
+    if (unsubscribeApproved) unsubscribeApproved();
+    if (unsubscribeUpdated) unsubscribeUpdated();
+  };
+}, [subscribeToChannel]);
 
   const handleApprove = async (id:number) => {
     try{

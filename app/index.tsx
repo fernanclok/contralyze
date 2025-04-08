@@ -42,9 +42,9 @@ const LoginScreen = ({}) => {
 
   const navigation = useNavigation();
   const { login } = useAuth();
-  const goToRegister = () => {
-    navigation.navigate("register");
-  };
+  // const goToRegister = () => {
+  //   navigation.navigate("register");
+  // };
 
   // Configuración de Pusher
   const { showLocalNotification, subscribeToChannel } = usePusher();
@@ -127,7 +127,7 @@ const LoginScreen = ({}) => {
           "🎉 Bienvenido!", 
           "Has iniciado sesión exitosamente."
         );
-        navigation.navigate("profile/budgets/MainBudgets"); // Navegar a la pantalla de inicio después de iniciar sesión
+        navigation.navigate("profile/dashboard"); // Navegar a la pantalla de inicio después de iniciar sesión
       }
     } catch (err) {
       setError("Login failed. Please check your credentials and try again.");
@@ -225,18 +225,18 @@ const LoginScreen = ({}) => {
                 )}
               </Pressable>
 
-              <Pressable style={styles.forgotPassword}>
+              {/* <Pressable style={styles.forgotPassword}>
                 <Text style={styles.forgotPasswordText}>
                   Forgot your password?
                 </Text>
-              </Pressable>
+              </Pressable> */}
 
-              <View style={styles.registerContainer}>
+              {/* <View style={styles.registerContainer}>
                 <Text style={styles.registerText}>Don't have an account?</Text>
                 <Pressable onPress={goToRegister}>
                   <Text style={styles.registerButtonText}>Register</Text>
                 </Pressable>
-              </View>
+              </View> */}
             </View>
           </ScrollView>
         </ImageBackground>

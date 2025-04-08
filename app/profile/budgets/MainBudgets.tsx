@@ -6,18 +6,41 @@ import { useState, useEffect } from "react";
 import BudgetAdminScreen from "./AdminBudgets";
 import UserBudgetRequestsScreen from "./UserBudgets";
 import tw from "twrnc";
+// import { usePusher } from "@/hooks/usePusher";
+// import { showMessage } from "react-native-flash-message";
 
 const MainBudgets: React.FC = () => {
       const navigation = useNavigation()
+      const route = useRoute();
+      const { role } = route.params; // Obtén el rol desde los parámetros de navegación
+      // const { subscribeToChannel } = usePusher();
     
       useEffect(() => {
         navigation.setOptions({
           headerShown: false,
         });
       }, [navigation]);
-    const route = useRoute();
-    const { role } = route.params; // Obtén el rol desde los parámetros de navegación
   
+      // useEffect(() => {
+      //   // Suscribirse al canal de presupuestos
+      //   const unsubscribe = subscribeToChannel(
+      //     "budgets-channel", // Nombre del canal
+      //     "budget-status", // Nombre del evento
+      //     (data) => {
+      //       // Manejar el evento recibido
+      //       const { budgetId, status } = data;
+      //      showMessage({
+      //         message: "Presupuesto actualizado",
+      //         description: `El presupuesto con ID ${budgetId} ha cambiado a ${status}.`,
+      //         type: "success",
+      //       });
+      //     }
+      //   );
+    
+      //   return () => {
+      //     if (unsubscribe) unsubscribe(); // Limpiar la suscripción al desmontar el componente
+      //   };
+      // }, [subscribeToChannel]);
     return (
       <ProtectedRoute>
         <MainLayout>
